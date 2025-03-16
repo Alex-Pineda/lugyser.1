@@ -21,8 +21,9 @@
             <div class="card-body">
                 <h1 class="card-title text-center">Bienvenido a Lugyser</h1>
                 <nav class="nav justify-content-center mb-4">
-                    <a class="nav-link" href="views/listar_reservas.php">Ver Reservas</a>
+                    <a class="nav-link" href="views/reservar_finca.php">Reservar Finca</a>
                     <a class="nav-link" href="views/publicar_finca.php">Publicar Finca</a>
+                    <a class="nav-link" href="views/listar_reservas.php">Ver Reservas</a>
                     <a class="nav-link" href="views/listar_fincas.php">Ver Fincas Publicadas</a>
                 </nav>
                 <div class="text-center">

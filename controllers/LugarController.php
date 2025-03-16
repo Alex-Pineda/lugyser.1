@@ -34,5 +34,13 @@ class LugarController {
             $data['zonas_verdes']
         );
     }
+
+    public function updateLugar($idlugar, $data) {
+        return $this->lugar->updateLugar($idlugar, $data);
+    }
+
+    public function deleteLugar($idlugar) {
+        return $this->lugar->deleteLugar($idlugar);
+    }
 }
 ?>

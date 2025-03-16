@@ -3,6 +3,7 @@ require_once __DIR__ . '/../models/Reserva.php';
 
 class ReservaController {
     private $reserva;
+    private $conn;
 
     public function __construct() {
         $db = new mysqli('localhost', 'root', '', 'lugyser');
@@ -11,6 +12,10 @@ class ReservaController {
             exit("No se pudo conectar a la base de datos.");
         }
         $this->reserva = new Reserva($db);
+        $this->conn = new mysqli('localhost', 'root', '', 'lugyser');
+        if ($this->conn->connect_error) {
+            die("Conexión fallida: " . $this->conn->connect_error);
+        }
     }
 
     public function getAllReservas() {
@@ -46,16 +51,27 @@ class ReservaController {
         );
     }
 
+    public function updateReserva($idreserva, $data) {
+        return $this->reserva->updateReserva($idreserva, $data);
+    }
+
+    public function deleteReserva($idreserva) {
+        return $this->reserva->deleteReserva($idreserva);
+    }
+
     private function validarDatos($data) {
         return isset($data['fecha_reserva'], $data['nombre_cliente'], $data['fecha_inicio'], 
                       $data['fecha_final'], $data['cantidad_personas'], $data['metodo_pago'], 
                       $data['estado_reserva']) && $data['cantidad_personas'] > 0;
     }
 
-
     public function showReservas() {
         $reservas = $this->getAllReservas();
         include __DIR__ . '/../views/listar_reservas.php';
+    }
+
+    public function __destruct() {
+        $this->conn->close();
     }
 }
 ?>
