@@ -1,40 +1,115 @@
+<?php
+session_start();
+require_once './models/UsuarioModel.php';
+require_once './models/RolModel.php';
+require_once './controllers/AuthController.php';
+require_once './config/database.php'; // Archivo que configura la conexión a la base de datos
+
+$db = new Database();
+$usuarioModel = new UsuarioModel($db->getConnection());
+$rolModel = new RolModel($db->getConnection());
+$authController = new AuthController($usuarioModel, $rolModel);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nombre_usuario = $_POST['nombre_usuario'];
+    $contrasena = $_POST['contrasena'];
+    $authController->login($nombre_usuario, $contrasena);
+}
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio</title>
+    <title>Página Principal - Lugyser</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        .card-title {
-            font-size: 2.5rem;
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .navbar {
+            background-color: #28a745;
+        }
+        .navbar a {
+            color: white;
             font-weight: bold;
         }
-        .lead {
-            font-size: 1.25rem;
+        .hero {
+            background-image: url('assets/images/hero.jpg'); /* Cambia esta ruta a tu imagen */
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 5rem 1rem;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: bold;
+        }
+        .hero p {
+            font-size: 1.5rem;
+            margin-top: 1rem;
+        }
+        .btn-primary {
+            background-color: #28a745;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #218838;
         }
     </style>
 </head>
-<body class="bg-dark text-white">
+<body>
+    <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.php">Lugyser</a>
+            <div class="ml-auto">
+                <?php if (!isset($_SESSION['usuario'])): ?>
+                    <a href="views/login.php" class="btn btn-light btn-sm">Iniciar Sesión</a> <!-- Redirige correctamente a login.php -->
+                    <a href="views/register.php" class="btn btn-light btn-sm">Registrarse</a>
+                <?php else: ?>
+                    <a href="logout.php" class="btn btn-danger btn-sm">Cerrar Sesión</a>
+                <?php endif; ?>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <h1>Bienvenido a Lugyser</h1>
+        <p>Explora y reserva las mejores fincas para tus vacaciones.</p>
+        <a href="views/reservar_finca.php" class="btn btn-primary btn-lg">Descubre Lugares</a> <!-- Redirige correctamente a reservar_finca.php -->
+        <?php if (isset($_SESSION['usuario'])): ?>
+            <a href="views/reservar_finca.php" class="btn btn-primary btn-lg">Reservar Finca</a>
+        <?php endif; ?>
+    </div>
+
+    <!-- Contenido adicional -->
     <div class="container mt-5">
-        <div class="card bg-light text-dark">
-            <div class="card-body">
-                <h1 class="card-title text-center">Bienvenido a Lugyser</h1>
-                <nav class="nav justify-content-center mb-4">
-                    <a class="nav-link" href="views/reservar_finca.php">Reservar Finca</a>
-                    <a class="nav-link" href="views/publicar_finca.php">Publicar Finca</a>
-                    <a class="nav-link" href="views/listar_reservas.php">Ver Reservas</a>
-                    <a class="nav-link" href="views/listar_fincas.php">Ver Fincas Publicadas</a>
-                </nav>
-                <div class="text-center">
-                    <p class="lead">Gestiona tus reservas y publicaciones de fincas de manera fácil y rápida.</p>
-                </div>
+        <h2 class="text-center">¿Por qué elegir Lugyser?</h2>
+        <p class="text-center">Ofrecemos las mejores opciones para tus vacaciones, con fincas exclusivas y servicios de calidad.</p>
+        <div class="row mt-4">
+            <div class="col-md-4 text-center">
+                <img src="assets/images/icon1.png" alt="Icono 1" class="mb-3" style="width: 80px;">
+                <h4>Fincas Exclusivas</h4>
+                <p>Encuentra las mejores fincas en ubicaciones privilegiadas.</p>
+            </div>
+            <div class="col-md-4 text-center">
+                <img src="assets/images/icon2.png" alt="Icono 2" class="mb-3" style="width: 80px;">
+                <h4>Reservas Seguras</h4>
+                <p>Garantizamos la seguridad en todas tus reservas.</p>
+            </div>
+            <div class="col-md-4 text-center">
+                <img src="assets/images/icon3.png" alt="Icono 3" class="mb-3" style="width: 80px;">
+                <h4>Atención Personalizada</h4>
+                <p>Estamos aquí para ayudarte en todo momento.</p>
             </div>
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
 </body>
 </html>
 <?php
@@ -64,8 +139,11 @@ switch ($action) {
         break;
     case 'register':
         $controller = new UsuarioController();
-        $result = $controller->register($_POST['nombre'], $_POST['email'], $_POST['password'], $_POST['telefono'], $_POST['direccion'], $_POST['ciudad'], $_POST['pais'], $_POST['codigo_postal']);
-        if ($result) {
+        $success = $controller->register($_POST['nombre'], $_POST['email'], $_POST['password'], $_POST['telefono'], $_POST['direccion'], $_POST['ciudad'], $_POST['pais'], $_POST['codigo_postal']);
+        if ($success === null) {
+            $success = false; // Handle cases where the function might still return void
+        }
+        if ($success !== false) {
             header('Location: ../views/login.php');
         } else {
             echo "Error en el registro.";

@@ -1,4 +1,8 @@
 <?php
+session_start();
+
+// No es necesario verificar si el usuario está registrado, ya que los clientes pueden acceder sin iniciar sesión
+
 // Incluir encabezado y conexión a la base de datos si es necesario
 include '../config/database.php';
 
@@ -95,11 +99,11 @@ if ($lugar_id) {
             margin: 0 auto; /* Centrar los inputs */
         }
         .form-container {
-            max-width: 70%; /* Disminuir el tamaño del formulario */
+            max-width: 90%; /* Disminuir el tamaño del formulario */
             margin: 0 auto;
         }
         .image-description-container {
-            max-width: 70%; /* Hacer la tarjeta de imagen y descripción el doble de ancho del formulario */
+            max-width: 90%; /* Hacer la tarjeta de imagen y descripción el doble de ancho del formulario */
             margin: 0 auto;
         }
         .image-description-container img {
@@ -172,7 +176,7 @@ if ($lugar_id) {
 
                         <div class="d-flex gap-2">
                             <button class="btn btn-primary btn-dynamic" type="submit">Reservar</button>
-                            <button class="btn btn-secondary btn-dynamic" type="reset">Cancelar</button>
+                            <a href="listar_fincas.php" class="btn btn-secondary btn-dynamic">Cancelar</a> <!-- Redirigir a listar_fincas.php -->
                         </div>
                     </form>
                 </div>

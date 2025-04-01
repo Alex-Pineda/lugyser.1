@@ -1,11 +1,14 @@
 <?php
 
-// Conectar a la base de datos
-$conn = new mysqli('localhost', 'root', '', 'lugyser');
+// Incluir la configuración de la base de datos
+include '../config/database.php';
 
-// Verificar la conexión
-if ($conn->connect_error) {
-    die("Conexión fallida: " . $conn->connect_error);
+// Crear una instancia de la clase Database y obtener la conexión
+$database = new Database();
+$conn = $database->getConnection(); // Asegurar que $conn esté definido
+
+if (!$conn) {
+    die("Conexión fallida: No se pudo conectar a la base de datos.");
 }
 
 $id = $_GET['id'] ?? null;
@@ -13,9 +16,13 @@ $reserva = null;
 
 if ($id) {
     $stmt = $conn->prepare("SELECT * FROM reserva WHERE idreserva = ?");
-    $stmt->bind_param("i", $id);
+    $stmt->bindParam(1, $id, PDO::PARAM_INT); // Cambiar a bindParam para PDO
     $stmt->execute();
-    $reserva = $stmt->get_result()->fetch_assoc();
+    $reserva = $stmt->fetch(PDO::FETCH_ASSOC); // Cambiar a fetch para PDO
+}
+
+if (isset($_GET['lugar_seleccionado'])) {
+    $reserva['lugar'] = $_GET['lugar_seleccionado']; // Actualizar el lugar en la reserva
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -25,14 +32,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cantidad_personas = $_POST['cantidad_personas'];
     $metodo_pago = $_POST['metodo_pago'];
     $estado_reserva = $_POST['estado_reserva'];
+    $nuevo_lugar = $_POST['nuevo_lugar'] ?? null; // Sincronizar nuevo lugar si se selecciona
 
-    $stmt = $conn->prepare("UPDATE reserva SET nombre_cliente = ?, fecha_inicio = ?, fecha_final = ?, cantidad_personas = ?, metodo_pago = ?, estado_reserva = ? WHERE idreserva = ?");
-    $stmt->bind_param("sssissi", $nombre_cliente, $fecha_inicio, $fecha_final, $cantidad_personas, $metodo_pago, $estado_reserva, $id);
+    // Verificar que el ID de la reserva exista para evitar conflictos
+    if ($id) {
+        $stmt = $conn->prepare("UPDATE reserva SET nombre_cliente = ?, fecha_inicio = ?, fecha_final = ?, cantidad_personas = ?, metodo_pago = ?, estado_reserva = ?, lugar = ? WHERE idreserva = ?");
+        $stmt->bindValue(1, $nombre_cliente, PDO::PARAM_STR);
+        $stmt->bindValue(2, $fecha_inicio, PDO::PARAM_STR);
+        $stmt->bindValue(3, $fecha_final, PDO::PARAM_STR);
+        $stmt->bindValue(4, $cantidad_personas, PDO::PARAM_INT);
+        $stmt->bindValue(5, $metodo_pago, PDO::PARAM_STR);
+        $stmt->bindValue(6, $estado_reserva, PDO::PARAM_STR);
+        $stmt->bindValue(7, $nuevo_lugar, PDO::PARAM_STR); // Guardar el lugar seleccionado
+        $stmt->bindValue(8, $id, PDO::PARAM_INT);
 
-    if ($stmt->execute()) {
-        echo "<script>alert('Reserva actualizada exitosamente.'); window.location.href='reservar_finca.php';</script>";
+        if ($stmt->execute()) {
+            echo "<script>alert('Reserva actualizada exitosamente.'); window.location.href='reservar_finca.php';</script>";
+        } else {
+            echo "<script>alert('Error al actualizar la reserva.'); window.location.href='reservar_finca.php';</script>";
+        }
     } else {
-        echo "<script>alert('Error al actualizar la reserva.'); window.location.href='reservar_finca.php';</script>";
+        echo "<script>alert('ID de reserva no válido.'); window.location.href='reservar_finca.php';</script>";
     }
 }
 ?>
@@ -48,12 +68,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css">
     <style>
         .form-container {
-            max-width: 50%; /* Aumentar el tamaño del formulario al 70% */
+            width: 50%; /* Aumentar el tamaño del formulario al 70% */
             margin: 0 auto;
             background-color: #ffffff;
             padding: 2rem;
             border-radius: 15px;
             box-shadow: 0 4px 8px rgba(234, 234, 229, 0.76);
+        }
+        @media (max-width: 768px) {
+            .form-container {
+                max-width: 95%; /* Ajustar el tamaño del formulario al 95% en pantallas pequeñas */
+            }
+        }
+        @media (max-width: 768px) {
+            .form-container {
+                width: 100%; /* Ajustar el ancho del formulario al 100% en pantallas pequeñas */
+                padding: 1.5rem; /* Reducir el padding para pantallas pequeñas */
+            }
         }
         .form-label {
             font-weight: bold;
@@ -109,6 +140,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin-bottom: 2rem;
             color:rgb(245, 248, 248); /* Cambiar el color del título */
         }
+        @media (max-width: 768px) {
+            form {
+                width: 95%; /* Ajustar el ancho del formulario al 95% en pantallas pequeñas */
+                margin: auto;
+            }
+        }
     </style>
 </head>
 <body class="bg-dark text-white">
@@ -152,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     <div class="btn-container">
                         <button type="submit" class="btn btn-primary">Actualizar</button>
-                        <a href="reservar_finca.php" class="btn btn-secondary">Cancelar</a>
+                        <a href="listar_reservas.php" class="btn btn-secondary">Cancelar</a>
                     </div>
                 </form>
             <?php else: ?>
@@ -164,5 +201,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </html>
 
 <?php
-$conn->close();
+$conn = null;
 ?>

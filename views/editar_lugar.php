@@ -1,23 +1,58 @@
 <?php
-// Incluir encabezado y conexión a la base de datos si es necesario
-include '../config/database.php';
-
-// Conectar a la base de datos
-$conn = new mysqli('localhost', 'root', '', 'lugyser');
-
-// Verificar la conexión
-if ($conn->connect_error) {
-    die("Conexión fallida: " . $conn->connect_error);
+session_start();
+if (!isset($_SESSION['usuario'])) {
+    header("Location: ../views/login.php"); // Redirigir al formulario de inicio de sesión si no hay sesión
+    exit;
 }
 
-$lugar_id = $_GET['id'] ?? null;
-$lugar = null;
+// Verificar si el usuario tiene el rol de proveedor o administrador
+$rolesPermitidos = ['proveedor', 'administrador'];
+$esPermitido = in_array($_SESSION['roles'][0]['nombre_rol'], $rolesPermitidos);
 
-if ($lugar_id) {
-    $stmt = $conn->prepare("SELECT * FROM lugar WHERE idlugar = ?");
-    $stmt->bind_param("i", $lugar_id);
+if (!$esPermitido) {
+    header("Location: ../index.php"); // Redirigir al inicio si no tiene permisos
+    exit;
+}
+
+require_once '../config/database.php';
+
+$db = new Database();
+$conn = $db->getConnection();
+
+// Verificar si la conexión a la base de datos es válida
+if (!$conn) {
+    die("Error al conectar con la base de datos.");
+}
+
+// Validar que se haya pasado un ID de lugar
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    die("ID de lugar no válido.");
+}
+
+$idLugar = intval($_GET['id']);
+$idUsuario = $_SESSION['usuario']['idusuario'];
+$esAdministrador = $_SESSION['roles'][0]['nombre_rol'] === 'administrador';
+
+// Verificar que el lugar pertenece al proveedor en sesión o permitir al administrador editar cualquier lugar
+$query = $esAdministrador 
+    ? "SELECT * FROM lugar WHERE idlugar = :idlugar" 
+    : "SELECT * FROM lugar WHERE idlugar = :idlugar AND usuario_has_rol_usuario_idusuario = :idusuario";
+
+$stmt = $conn->prepare($query);
+$stmt->bindParam(':idlugar', $idLugar, PDO::PARAM_INT);
+if (!$esAdministrador) {
+    $stmt->bindParam(':idusuario', $idUsuario, PDO::PARAM_INT);
+}
+
+try {
     $stmt->execute();
-    $lugar = $stmt->get_result()->fetch_assoc();
+    $lugar = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$lugar) {
+        die("No tienes permiso para editar este lugar o el lugar no existe.");
+    }
+} catch (PDOException $e) {
+    die("Error al verificar el lugar: " . $e->getMessage());
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -34,7 +69,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $zonas_verdes = isset($_POST['zonas_verdes']) ? 1 : 0;
 
     $stmt = $conn->prepare("UPDATE lugar SET nombre_lugar = ?, ubicacion_lugar = ?, descripcion_lugar = ?, cantidad_habitaciones = ?, precio_lugar = ?, tipo = ?, disponibilidad_lugar = ?, cantidad_banos = ?, cantidad_piscinas = ?, juegos_infantiles = ?, zonas_verdes = ? WHERE idlugar = ?");
-    $stmt->bind_param("sssiisiiiiii", $nombre_lugar, $ubicacion_lugar, $descripcion_lugar, $cantidad_habitaciones, $precio_lugar, $tipo, $disponibilidad_lugar, $cantidad_banos, $cantidad_piscinas, $juegos_infantiles, $zonas_verdes, $lugar_id);
+    $stmt->bindValue(1, $nombre_lugar, PDO::PARAM_STR);
+    $stmt->bindValue(2, $ubicacion_lugar, PDO::PARAM_STR);
+    $stmt->bindValue(3, $descripcion_lugar, PDO::PARAM_STR);
+    $stmt->bindValue(4, $cantidad_habitaciones, PDO::PARAM_INT);
+    $stmt->bindValue(5, $precio_lugar, PDO::PARAM_STR);
+    $stmt->bindValue(6, $tipo, PDO::PARAM_STR);
+    $stmt->bindValue(7, $disponibilidad_lugar, PDO::PARAM_INT);
+    $stmt->bindValue(8, $cantidad_banos, PDO::PARAM_INT);
+    $stmt->bindValue(9, $cantidad_piscinas, PDO::PARAM_INT);
+    $stmt->bindValue(10, $juegos_infantiles, PDO::PARAM_INT);
+    $stmt->bindValue(11, $zonas_verdes, PDO::PARAM_INT);
+    $stmt->bindValue(12, $idLugar, PDO::PARAM_INT);
 
     if ($stmt->execute()) {
         echo "<script>alert('Lugar actualizado exitosamente.'); window.location.href='listar_fincas.php';</script>";
@@ -56,12 +102,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css">
     <style>
         .form-container {
-            max-width: 55%; /* Aumentar el ancho del formulario al 55% */
+            width: 50%; /* Aumentar el ancho del formulario al 55% */
             margin: 0 auto;
             background-color: #ffffff;
             padding: 2rem;
             border-radius: 15px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        @media (max-width: 768px) {
+            .form-container {
+                width: 90%; /* Ancho del formulario al 90% en pantallas pequeñas */
+            }
         }
         .form-label {
             font-weight: bold;

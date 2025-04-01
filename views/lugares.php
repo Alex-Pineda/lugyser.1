@@ -1,41 +1,64 @@
+<?php
+session_start();
+require_once '../config/database.php'; // Archivo que configura la conexión a la base de datos
+
+$db = new Database();
+$conn = $db->getConnection();
+
+// Obtener la lista de lugares desde la tabla lugar
+$query = "SELECT * FROM lugar";
+$stmt = $conn->prepare($query);
+$stmt->execute();
+$lugares = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lugares Disponibles</title>
+    <title>Lista de Lugares - Lugyser</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../public/assets/styles.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .container {
+            margin-top: 2rem;
+        }
+        .card {
+            margin-bottom: 1rem;
+        }
+    </style>
+    <script>
+        function mostrarMensaje() {
+            alert('Debes registrarte para poder reservar.');
+        }
+    </script>
 </head>
-<body class="bg-dark text-white">
-    <div class="container mt-5">
-        <div class="card bg-light text-dark">
-            <div class="card-body">
-                <h2 class="card-title text-center">Lugares Disponibles</h2>
-                <div class="lugares-container">
-                    <?php
-                    require_once '../config/database.php';
-                    require_once '../models/Lugar.php';
-
-                    $db = (new Database())->getConnection();
-                    $lugar = new Lugar();
-                    $lugares = $lugar->getAllLugares();
-
-                    foreach ($lugares as $lugar) {
-                        echo "<div class='lugar'>";
-                        echo "<h3>" . $lugar['nombre_lugar'] . "</h3>";
-                        echo "<p>" . $lugar['descripcion_lugar'] . "</p>";
-                        echo "<p>Ubicación: " . $lugar['ubicacion_lugar'] . "</p>";
-                        echo "<p>Precio por noche: $" . $lugar['precio_lugar'] . "</p>";
-                        echo "</div>";
-                    }
-                    ?>
+<body>
+    <div class="container">
+        <h1 class="text-center">Lista de Lugares</h1>
+        <div class="row">
+            <?php foreach ($lugares as $lugar): ?>
+                <div class="col-md-4">
+                    <div class="card">
+                        <img src="data:image/jpeg;base64,<?php echo base64_encode($lugar['imagen']); ?>" class="card-img-top" alt="Imagen del lugar">
+                        <div class="card-body">
+                            <h5 class="card-title"><?php echo htmlspecialchars($lugar['nombre']); ?></h5>
+                            <p class="card-text"><?php echo htmlspecialchars($lugar['descripcion']); ?></p>
+                            <?php if (isset($_SESSION['usuario'])): ?>
+                                <a href="reservar.php?id=<?php echo $lugar['id']; ?>" class="btn btn-primary">Reservar</a>
+                            <?php else: ?>
+                                <button onclick="mostrarMensaje()" class="btn btn-secondary">Reservar</button>
+                            <?php endif; ?>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            <?php endforeach; ?>
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
 </body>
 </html>

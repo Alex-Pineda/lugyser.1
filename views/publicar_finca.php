@@ -1,13 +1,73 @@
 <?php
-// Incluir encabezado y conexión a la base de datos si es necesario
+session_start();
+if (!isset($_SESSION['usuario'])) {
+    header("Location: ../views/login.php"); // Redirigir al formulario de inicio de sesión si no hay sesión
+    exit;
+}
+
+// Permitir acceso a proveedores y administradores
+$rolesPermitidos = ['proveedor', 'administrador'];
+$esPermitido = in_array($_SESSION['roles'][0]['nombre_rol'], $rolesPermitidos);
+
+if (!$esPermitido) {
+    header("Location: ../index.php"); // Redirigir al inicio si no tiene permisos
+    exit;
+}
+
+// Incluir encabezado y conexión a la base de datos
 include '../config/database.php';
 
-// Conectar a la base de datos
 $conn = new mysqli('localhost', 'root', '', 'lugyser');
 
 // Verificar la conexión
 if ($conn->connect_error) {
     die("Conexión fallida: " . $conn->connect_error);
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Validar los datos del formulario
+    $nombre_lugar = trim($_POST['nombre_lugar']);
+    $ubicacion_lugar = trim($_POST['ubicacion_lugar']);
+    $descripcion_lugar = trim($_POST['descripcion_lugar']);
+    $cantidad_habitaciones = intval($_POST['cantidad_habitaciones']);
+    $precio_lugar = floatval($_POST['precio_lugar']);
+    $tipo = trim($_POST['tipo']);
+    $disponibilidad_lugar = isset($_POST['disponibilidad_lugar']) ? 1 : 0;
+    $cantidad_banos = intval($_POST['cantidad_banos']);
+    $cantidad_piscinas = intval($_POST['cantidad_piscinas']);
+    $juegos_infantiles = isset($_POST['juegos_infantiles']) ? 1 : 0;
+    $zonas_verdes = isset($_POST['zonas_verdes']) ? 1 : 0;
+    $imagen_lugar = $_FILES['imagen_lugar']['name'];
+    $usuario_id = $_SESSION['usuario']['idusuario'];
+
+    // Asignar el rol correspondiente
+    $rol_id = ($_SESSION['roles'][0]['nombre_rol'] === 'administrador') ? 1 : 2; // 1: Administrador, 2: Proveedor
+
+    // Validar campos obligatorios
+    if (empty($nombre_lugar) || empty($ubicacion_lugar) || empty($descripcion_lugar) || empty($imagen_lugar)) {
+        echo "<script>alert('Por favor, complete todos los campos obligatorios.'); window.history.back();</script>";
+        exit;
+    }
+
+    // Mover la imagen subida a la carpeta de destino
+    $target_dir = "../uploads/";
+    $target_file = $target_dir . basename($imagen_lugar);
+    if (!move_uploaded_file($_FILES['imagen_lugar']['tmp_name'], $target_file)) {
+        echo "<script>alert('Error al subir la imagen.'); window.history.back();</script>";
+        exit;
+    }
+
+    // Insertar los datos en la tabla `lugar`
+    $stmt = $conn->prepare("INSERT INTO lugar (nombre_lugar, ubicacion_lugar, descripcion_lugar, cantidad_habitaciones, precio_lugar, tipo, disponibilidad_lugar, cantidad_banos, cantidad_piscinas, juegos_infantiles, zonas_verdes, imagen_lugar, usuario_has_rol_usuario_idusuario, usuario_has_rol_rol_idrol) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssiisiiiiisii", $nombre_lugar, $ubicacion_lugar, $descripcion_lugar, $cantidad_habitaciones, $precio_lugar, $tipo, $disponibilidad_lugar, $cantidad_banos, $cantidad_piscinas, $juegos_infantiles, $zonas_verdes, $imagen_lugar, $usuario_id, $rol_id);
+
+    if ($stmt->execute()) {
+        // Redirigir al dashboard con un indicador de éxito
+        header("Location: proveedor_dashboard.php?publicado=true");
+        exit;
+    } else {
+        echo "<script>alert('Error al publicar la finca.'); window.history.back();</script>";
+    }
 }
 ?>
 

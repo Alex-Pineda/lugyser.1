@@ -9,7 +9,32 @@ class UsuarioController {
     }
 
     public function login($nombre, $password) {
-        return $this->usuario->login($nombre, $password);
+        $database = new Database();
+        $conn = $database->getConnection();
+
+        $stmt = $conn->prepare("SELECT * FROM usuarios WHERE nombre = ? AND password = ?");
+        $stmt->bindParam(1, $nombre, PDO::PARAM_STR);
+        $stmt->bindParam(2, $password, PDO::PARAM_STR);
+        $stmt->execute();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user) {
+            session_start();
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['rol'] = $user['rol']; // Guardar el rol del usuario en la sesión
+
+            // Redirigir según el rol
+            if ($user['rol'] === 'admin') {
+                header('Location: ../views/admin_dashboard.php');
+            } elseif ($user['rol'] === 'proveedor') {
+                header('Location: ../views/proveedor_dashboard.php');
+            } else {
+                header('Location: ../views/index.php');
+            }
+            exit;
+        } else {
+            return false;
+        }
     }
 
     public function register($nombre, $email, $password, $telefono, $direccion, $ciudad, $pais, $codigo_postal) {
