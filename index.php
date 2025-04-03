@@ -10,9 +10,11 @@ $usuarioModel = new UsuarioModel($db->getConnection());
 $rolModel = new RolModel($db->getConnection());
 $authController = new AuthController($usuarioModel, $rolModel);
 
+// Verificar si las claves existen en $_POST antes de acceder a ellas
+$nombre_usuario = isset($_POST['nombre_usuario']) ? $_POST['nombre_usuario'] : '';
+$contrasena = isset($_POST['contrasena']) ? $_POST['contrasena'] : '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nombre_usuario = $_POST['nombre_usuario'];
-    $contrasena = $_POST['contrasena'];
     $authController->login($nombre_usuario, $contrasena);
 }
 ?>
@@ -27,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #f8f9fa;
+            background-color:rgb(115, 205, 209);
             color: #333;
         }
         .navbar {
@@ -37,6 +39,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: white;
             font-weight: bold;
         }
+
+        .btn {
+        color: #212529;
+        background-color: #3d6083;
+        border-color: #f8f9fa;
+        }
+
         .hero {
             background-image: url('assets/images/hero.jpg'); /* Cambia esta ruta a tu imagen */
             background-size: cover;
@@ -60,7 +69,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .btn-primary:hover {
             background-color: #218838;
         }
+        .mb-3 {
+            border-radius: 50%; /* Hacer las imágenes circulares */
+            width: 100px; /* Establecer un ancho fijo */
+            height: 0px; /* Establecer un alto fijo */
+            object-fit: cover; /* Ajustar la imagen dentro del contenedor */
+        }
     </style>
+
 </head>
 <body>
     <!-- Barra de navegación -->
@@ -94,17 +110,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p class="text-center">Ofrecemos las mejores opciones para tus vacaciones, con fincas exclusivas y servicios de calidad.</p>
         <div class="row mt-4">
             <div class="col-md-4 text-center">
-                <img src="assets/images/icon1.png" alt="Icono 1" class="mb-3" style="width: 80px;">
+                <img src="https://st.depositphotos.com/1819777/1406/v/450/depositphotos_14060831-stock-illustration-sunset-on-the-beach.jpg" alt="Icono 1" class="mb-3" style="border-radius: 50%; width: 80px; height: 80px; object-fit: cover;">
                 <h4>Fincas Exclusivas</h4>
                 <p>Encuentra las mejores fincas en ubicaciones privilegiadas.</p>
             </div>
             <div class="col-md-4 text-center">
-                <img src="assets/images/icon2.png" alt="Icono 2" class="mb-3" style="width: 80px;">
+                <img src="https://img.freepik.com/fotos-premium/icono-candado-ciberseguridad-concepto-red-digital-big-data_1034910-2403.jpg" alt="Reservas Seguras" class="mb-3" style="border-radius: 50%; width: 80px; height: 80px; object-fit: cover;">
                 <h4>Reservas Seguras</h4>
                 <p>Garantizamos la seguridad en todas tus reservas.</p>
             </div>
             <div class="col-md-4 text-center">
-                <img src="assets/images/icon3.png" alt="Icono 3" class="mb-3" style="width: 80px;">
+                <img src="https://blog.comparasoftware.com/wp-content/uploads/2021/02/dinamica-de-servicio-al-cliente-768x432.png" alt="Icono 3" class="mb-3" style="border-radius: 50%; width: 80px; height: 80px; object-fit: cover;">
                 <h4>Atención Personalizada</h4>
                 <p>Estamos aquí para ayudarte en todo momento.</p>
             </div>

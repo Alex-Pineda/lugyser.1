@@ -25,6 +25,10 @@ if ($conn->connect_error) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Depuración: Registrar los datos enviados
+    error_log("Datos enviados desde el formulario: " . json_encode($_POST));
+    error_log("Archivo subido: " . json_encode($_FILES['imagen_lugar']));
+
     // Validar los datos del formulario
     $nombre_lugar = trim($_POST['nombre_lugar']);
     $ubicacion_lugar = trim($_POST['ubicacion_lugar']);
@@ -53,6 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $target_dir = "../uploads/";
     $target_file = $target_dir . basename($imagen_lugar);
     if (!move_uploaded_file($_FILES['imagen_lugar']['tmp_name'], $target_file)) {
+        error_log("Error al mover la imagen al directorio destino.");
         echo "<script>alert('Error al subir la imagen.'); window.history.back();</script>";
         exit;
     }
@@ -160,6 +165,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-size: 2.5rem;
             margin-bottom: 2rem;
             color: #333; /* Cambiar el color del título */
+        }
+        @media (max-width: 768px) {
+            .form-container {
+                max-width: 80%;
+                padding: 1.5rem;
+            }
+            .form-label {
+                font-size: 16px;
+            }
+            .form-control {
+                font-size: 16px;
+            }
+        }
+        @media (max-width: 576px) {
+            .form-container {
+                max-width: 95%;
+                padding: 1rem;
+            }
+            .form-label {
+                font-size: 14px;
+            }
+            .form-control {
+                font-size: 14px;
+            }
+            .btn-container {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
     </style>
 </head>

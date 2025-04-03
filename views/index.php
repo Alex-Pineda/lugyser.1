@@ -4,6 +4,10 @@ if (isset($_SESSION['usuario'])) {
     header("Location: admin_dashboard.php");
     exit;
 }
+
+// Verificar si las claves existen en $_POST antes de acceder a ellas
+$nombre_usuario = isset($_POST['nombre_usuario']) ? $_POST['nombre_usuario'] : '';
+$contrasena = isset($_POST['contrasena']) ? $_POST['contrasena'] : '';
 ?>
 
 <!DOCTYPE html>
@@ -18,7 +22,7 @@ if (isset($_SESSION['usuario'])) {
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #f8f9fa;
+            background-color:rgb(25, 139, 139);
             color: #333;
         }
         .hero {
@@ -83,6 +87,47 @@ if (isset($_SESSION['usuario'])) {
             padding: 1.5rem 0;
             text-align: center;
         }
+        .mb-3 {
+            border-radius: 50%; /* Hacer las imágenes circulares */
+            width: 150px; /* Establecer un ancho fijo */
+            height: 150px; /* Establecer un alto fijo */
+            object-fit: cover; /* Ajustar la imagen dentro del contenedor */
+        }
+        @media (max-width: 768px) {
+            .hero {
+                height: 50vh;
+            }
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .features .feature i {
+                font-size: 3rem;
+            }
+            .features .feature h3 {
+                font-size: 1.5rem;
+            }
+            .login-container {
+                margin: 2rem auto;
+                padding: 1.5rem;
+            }
+            .login-container h1 {
+                font-size: 1.5rem;
+            }
+        }
+        @media (max-width: 576px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .features .feature i {
+                font-size: 2.5rem;
+            }
+            .features .feature h3 {
+                font-size: 1.25rem;
+            }
+            .login-container {
+                padding: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -94,33 +139,37 @@ if (isset($_SESSION['usuario'])) {
     <!-- Features Section -->
     <div class="container features">
         <div class="row">
-            <div class="col-md-4 feature">
-                <i class="fas fa-home"></i>
+            <div class="col-md-4 col-12 feature">
+                <img src="https://st.depositphotos.com/1819777/1406/v/450/depositphotos_14060831-stock-illustration-sunset-on-the-beach.jpg" 
+                     alt="Fincas de Ensueño" 
+                     class="mb-3" 
+                     style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover;">
                 <h3>Fincas de Ensueño</h3>
                 <p>Encuentra las mejores fincas para tus vacaciones.</p>
             </div>
-            <div class="col-md-4 feature">
-                <i class="fas fa-calendar-alt"></i>
+            <div class="col-md-4 col-12 feature">
+                <img src="https://img.freepik.com/fotos-premium/icono-candado-ciberseguridad-concepto-red-digital-big-data_1034910-2403.jpg" 
+                     alt="Reservas Seguras" 
+                     class="mb-3" 
+                     style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover;">
                 <h3>Reservas Fáciles</h3>
                 <p>Reserva tu lugar favorito en pocos pasos.</p>
             </div>
-            <div class="col-md-4 feature">
-                <i class="fas fa-users"></i>
+            <div class="col-md-4 col-12 feature">
+                <img src="https://blog.comparasoftware.com/wp-content/uploads/2021/02/dinamica-de-servicio-al-cliente-768x432.png" 
+                     alt="Atención Personalizada" 
+                     class="mb-3" 
+                     style="border-radius: 50%; width: 150px; height: 150px; object-fit: cover;">
                 <h3>Atención Personalizada</h3>
                 <p>Estamos aquí para ayudarte en todo momento.</p>
             </div>
         </div>
     </div>
 
-    <!-- Login Section -->
-    <div class="login-container">
-        <h1>Iniciar Sesión</h1>
-        <form action="../controllers/AuthController.php" method="POST">
-            <input type="text" name="nombre_usuario" placeholder="Usuario" required class="form-control">
-            <input type="password" name="contrasena" placeholder="Contraseña" required class="form-control">
-            <button type="submit" class="btn btn-success btn-block">Iniciar Sesión</button>
-        </form>
-        <a href="register.php" class="btn-register">Registrarse como Proveedor</a>
+    <!-- Login and Register Buttons -->
+    <div class="text-center my-4">
+        <a href="login.php" class="btn btn-success btn-lg mx-2">Iniciar Sesión</a>
+        <a href="register.php" class="btn btn-primary btn-lg mx-2">Registrarse</a>
     </div>
 
     <!-- Footer -->
@@ -131,4 +180,3 @@ if (isset($_SESSION['usuario'])) {
     <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>

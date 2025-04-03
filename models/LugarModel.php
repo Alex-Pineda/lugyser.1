@@ -32,43 +32,59 @@ class LugarModel {
     }
 
     public function insertarLugar($datos) {
-        try {
-            $query = "INSERT INTO lugar (nombre_lugar, ubicacion_lugar, descripcion_lugar, cantidad_habitaciones, precio_lugar, tipo, disponibilidad_lugar, cantidad_banos, cantidad_piscinas, juegos_infantiles, zonas_verdes, imagen_lugar, usuario_has_rol_usuario_idusuario, usuario_has_rol_rol_idrol) VALUES (:nombre, :ubicacion, :descripcion, :habitaciones, :precio, :tipo, :disponibilidad, :banos, :piscinas, :juegos, :zonas, :imagen, :usuarioId, :rolId)";
-            $stmt = $this->conn->prepare($query);
-            return $stmt->execute($datos);
-        } catch (PDOException $e) {
-            error_log("Error en insertarLugar: " . $e->getMessage());
+        $query = "INSERT INTO lugar (
+            nombre_lugar, imagen_lugar, tipo, ubicacion_lugar, descripcion_lugar, 
+            cantidad_habitaciones, disponibilidad_lugar, precio_lugar, 
+            usuario_has_rol_usuario_idusuario, usuario_has_rol_rol_idrol, 
+            cantidad_banos, cantidad_piscinas, juegos_infantiles, zonas_verdes
+        ) VALUES (
+            :nombre_lugar, :imagen_lugar, :tipo, :ubicacion_lugar, :descripcion_lugar, 
+            :cantidad_habitaciones, :disponibilidad_lugar, :precio_lugar, 
+            :usuario_idusuario, :rol_idrol, 
+            :cantidad_banos, :cantidad_piscinas, :juegos_infantiles, :zonas_verdes
+        )";
+
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->bindParam(':nombre_lugar', $datos['nombre_lugar']);
+        $stmt->bindParam(':imagen_lugar', $datos['imagen_lugar']);
+        $stmt->bindParam(':tipo', $datos['tipo']);
+        $stmt->bindParam(':ubicacion_lugar', $datos['ubicacion_lugar']);
+        $stmt->bindParam(':descripcion_lugar', $datos['descripcion_lugar']);
+        $stmt->bindParam(':cantidad_habitaciones', $datos['cantidad_habitaciones']);
+        $stmt->bindParam(':disponibilidad_lugar', $datos['disponibilidad_lugar']);
+        $stmt->bindParam(':precio_lugar', $datos['precio_lugar']);
+        $stmt->bindParam(':usuario_idusuario', $datos['usuario_idusuario']);
+        $stmt->bindParam(':rol_idrol', $datos['rol_idrol']);
+        $stmt->bindParam(':cantidad_banos', $datos['cantidad_banos']);
+        $stmt->bindParam(':cantidad_piscinas', $datos['cantidad_piscinas']);
+        $stmt->bindParam(':juegos_infantiles', $datos['juegos_infantiles']);
+        $stmt->bindParam(':zonas_verdes', $datos['zonas_verdes']);
+
+        if (!$stmt->execute()) {
+            error_log("Error en insertarLugar: " . implode(", ", $stmt->errorInfo()));
             return false;
         }
+
+        return true;
     }
 
-    public function obtenerLugaresConUsuarioYRol($usuarioId, $rolNombre) {
+    public function obtenerLugaresConUsuarioYRol($usuarioId, $rolId) {
         try {
             $query = "
-                SELECT 
-                    lugar.*,
-                    rol.nombre_rol AS nombre_rol
-                FROM 
-                    lugar
-                JOIN 
-                    usuario_has_rol ON lugar.usuario_has_rol_usuario_idusuario = usuario_has_rol.usuario_idusuario
-                    AND lugar.usuario_has_rol_rol_idrol = usuario_has_rol.rol_idrol
-                JOIN 
-                    rol ON usuario_has_rol.rol_idrol = rol.idrol
-                WHERE 
-                    usuario_has_rol.usuario_idusuario = :usuarioId
-                    AND rol.nombre_rol = :rolNombre
+                SELECT lugar.*, rol.nombre_rol AS nombre_rol
+                FROM lugar
+                JOIN usuario_has_rol ON lugar.usuario_has_rol_usuario_idusuario = usuario_has_rol.usuario_idusuario
+                AND lugar.usuario_has_rol_rol_idrol = usuario_has_rol.rol_idrol
+                JOIN rol ON usuario_has_rol.rol_idrol = rol.idrol
+                WHERE usuario_has_rol.usuario_idusuario = :usuarioId
+                AND usuario_has_rol.rol_idrol = :rolId
             ";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':usuarioId', $usuarioId, PDO::PARAM_INT);
-            $stmt->bindParam(':rolNombre', $rolNombre, PDO::PARAM_STR);
+            $stmt->bindParam(':rolId', $rolId, PDO::PARAM_INT);
             $stmt->execute();
-            $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            // Depuración: Registrar los resultados obtenidos
-            error_log("Resultados obtenidos en obtenerLugaresConUsuarioYRol: " . json_encode($resultados));
-
-            return $resultados;
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("Error en obtenerLugaresConUsuarioYRol: " . $e->getMessage());
             return [];

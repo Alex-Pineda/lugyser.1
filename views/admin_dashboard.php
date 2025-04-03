@@ -1,11 +1,7 @@
 <?php
 session_start();
-if (!isset($_SESSION['usuario'])) { // Verifica que la sesión esté iniciada
-    header("Location: ../index.php"); // Redirigir al index si no hay sesión
-    exit;
-}
-if (!in_array('administrador', array_column($_SESSION['roles'], 'nombre_rol'))) { // Verifica que el usuario tenga el rol de administrador
-    header("Location: ../index.php"); // Redirigir al index si no tiene el rol de administrador
+if (!isset($_SESSION['usuario']) || !in_array('administrador', array_column($_SESSION['roles'], 'nombre_rol'))) {
+    header("Location: ../views/login.php");
     exit;
 }
 
@@ -48,85 +44,151 @@ $usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administrador - Lugyser</title>
+    <title>Panel de Administración</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Roboto', sans-serif;
             background-color: #f8f9fa;
             color: #333;
         }
-        .hero {
-            background-color: #28a745;
+        .dashboard-header {
+            background-color: #343a40;
             color: white;
-            padding: 2rem 0;
+            padding: 1.5rem 0;
             text-align: center;
         }
-        .hero h1 {
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+        }
+        .dashboard-content {
+            padding: 2rem;
+        }
+        .card {
+            margin-bottom: 1.5rem;
+        }
+        .card i {
             font-size: 3rem;
-            font-weight: bold;
+            color: #007bff;
         }
-        .options-container {
-            margin-top: 2rem;
-            text-align: center;
+        .card-title {
+            font-size: 1.5rem;
+            margin-top: 1rem;
         }
-        .options-container a {
-            margin: 10px;
-            font-size: 1.2rem;
-            color: white;
-            background-color: #28a745;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
+        @media (max-width: 768px) {
+            .dashboard-header h1 {
+                font-size: 2rem;
+            }
+            .card i {
+                font-size: 2.5rem;
+            }
+            .card-title {
+                font-size: 1.25rem;
+            }
         }
-        .options-container a:hover {
-            background-color: #218838;
+        @media (max-width: 576px) {
+            .dashboard-header h1 {
+                font-size: 1.8rem;
+            }
+            .card i {
+                font-size: 2rem;
+            }
+            .card-title {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="hero">
-        <h1>Panel de Administrador</h1>
-    </div>
-
-    <div class="container options-container">
-        <!-- Opciones del panel de administrador -->
-        <a href="publicar_finca.php">Publicar Finca</a>
-        <a href="reservar_finca.php">Reservar Finca</a>
-        <a href="listar_fincas.php">Listar Fincas</a>
-        <a href="listar_reservas.php">Listar Reservas</a>
-        <a href="../logout.php" class="btn btn-danger">Cerrar Sesión</a>
-    </div>
-
-    <div class="container mt-5">
-        <h2 class="text-center">Asignar Roles</h2>
-        <form method="POST" action="admin_dashboard.php" class="mt-4">
-            <div class="form-group">
-                <label for="usuario_id">Seleccionar Usuario</label>
-                <select name="usuario_id" id="usuario_id" class="form-control" required>
-                    <?php foreach ($usuarios as $usuario): ?>
-                        <option value="<?php echo $usuario['idusuario']; ?>">
-                            <?php echo $usuario['nombre'] . ' ' . $usuario['apellido'] . ' (' . $usuario['nombre_usuario'] . ')'; ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div class="form-group mt-3">
-                <label for="rol">Seleccionar Rol</label>
-                <select name="rol" id="rol" class="form-control" required>
-                    <option value="administrador">Administrador</option>
-                    <option value="proveedor">Proveedor</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary mt-3">Asignar Rol</button>
+    <header class="dashboard-header d-flex justify-content-between align-items-center">
+        <h1>Panel de Administración</h1>
+        <form action="../index.php" method="POST" style="margin-right: 20px;">
+            <button type="submit" class="btn btn-danger">Cerrar Sesión</button>
         </form>
-    </div>
+    </header>
 
-    <footer class="text-center mt-5">
-        <p>&copy; 2023 Lugyser. Todos los derechos reservados.</p>
+    <main class="dashboard-content container">
+        <div class="row">
+            <div class="col-md-4 col-sm-6">
+                <div class="card text-center shadow">
+                    <div class="card-body">
+                        <i class="fas fa-users"></i>
+                        <h5 class="card-title">Usuarios</h5>
+                        <p class="card-text">Gestiona los usuarios registrados en la plataforma.</p>
+                        <a href="../views/administrar_usuarios.php" class="btn btn-primary">Administrar</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <div class="card text-center shadow">
+                    <div class="card-body">
+                        <i class="fas fa-home"></i>
+                        <h5 class="card-title">Fincas</h5>
+                        <p class="card-text">Gestiona las fincas publicadas por los proveedores.</p>
+                        <a href="../views/listar_fincas.php" class="btn btn-primary">Ver Fincas</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <div class="card text-center shadow">
+                    <div class="card-body">
+                        <i class="fas fa-calendar-alt"></i>
+                        <h5 class="card-title">Reservas</h5>
+                        <p class="card-text">Gestiona las reservas realizadas por los clientes.</p>
+                        <a href="../views/listar_reservas.php" class="btn btn-primary">Ver Reservas</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <div class="card text-center shadow">
+                    <div class="card-body">
+                        <i class="fas fa-plus-circle"></i>
+                        <h5 class="card-title">Publicar Finca</h5>
+                        <p class="card-text">Publica nuevas fincas para los clientes.</p>
+                        <a href="../views/publicar_finca.php" class="btn btn-primary">Publicar</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <div class="card text-center shadow">
+                    <div class="card-body">
+                        <i class="fas fa-book"></i>
+                        <h5 class="card-title">Reservar Finca</h5>
+                        <p class="card-text">Reserva una finca para un cliente.</p>
+                        <a href="../views/reservar_finca.php" class="btn btn-primary">Reservar</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <div class="card text-center shadow">
+                    <div class="card-body">
+                        <i class="fas fa-cogs"></i>
+                        <h5 class="card-title">Configuración</h5>
+                        <p class="card-text">Ajusta las configuraciones del sistema.</p>
+                        <a href="../views/configuracion.php" class="btn btn-primary">Configurar</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <div class="card text-center shadow">
+                    <div class="card-body">
+                        <i class="fas fa-user-tag"></i>
+                        <h5 class="card-title">Asignar Rol Proveedor</h5>
+                        <p class="card-text">Asigna el rol de proveedor a un usuario cliente.</p>
+                        <a href="../views/asignar_rol.php" class="btn btn-primary">Asignar Rol</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center py-3 bg-dark text-white">
+        <p>&copy; 2025 Lugyser. Todos los derechos reservados.</p>
     </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

@@ -64,7 +64,7 @@ if (isset($_GET['publicado']) && $_GET['publicado'] === 'true') {
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #f8f9fa;
+            background-color:rgb(249, 250, 248);
             color: #333;
         }
         .navbar {
@@ -99,7 +99,6 @@ if (isset($_GET['publicado']) && $_GET['publicado'] === 'true') {
         <div class="text-center mb-4">
             <a href="publicar_finca.php" class="btn btn-primary">Publicar Nueva Finca</a> <!-- Botón accesible para ambos roles -->
             <a href="reservar_finca.php" class="btn btn-secondary">Realizar Reserva</a>
-            <a href="listar_fincas.php?proveedor_id=<?php echo $_SESSION['usuario']['idusuario']; ?>" class="btn btn-info">Listar Fincas</a> <!-- Enlace actualizado -->
         </div>
 
         <h2 class="text-center">Tus Lugares Publicados</h2>
