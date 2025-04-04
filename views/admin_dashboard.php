@@ -113,16 +113,6 @@ $usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
             <div class="col-md-4 col-sm-6">
                 <div class="card text-center shadow">
                     <div class="card-body">
-                        <i class="fas fa-users"></i>
-                        <h5 class="card-title">Usuarios</h5>
-                        <p class="card-text">Gestiona los usuarios registrados en la plataforma.</p>
-                        <a href="../views/administrar_usuarios.php" class="btn btn-primary">Administrar</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 col-sm-6">
-                <div class="card text-center shadow">
-                    <div class="card-body">
                         <i class="fas fa-home"></i>
                         <h5 class="card-title">Fincas</h5>
                         <p class="card-text">Gestiona las fincas publicadas por los proveedores.</p>
@@ -157,16 +147,6 @@ $usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
                         <h5 class="card-title">Reservar Finca</h5>
                         <p class="card-text">Reserva una finca para un cliente.</p>
                         <a href="../views/reservar_finca.php" class="btn btn-primary">Reservar</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 col-sm-6">
-                <div class="card text-center shadow">
-                    <div class="card-body">
-                        <i class="fas fa-cogs"></i>
-                        <h5 class="card-title">Configuración</h5>
-                        <p class="card-text">Ajusta las configuraciones del sistema.</p>
-                        <a href="../views/configuracion.php" class="btn btn-primary">Configurar</a>
                     </div>
                 </div>
             </div>
