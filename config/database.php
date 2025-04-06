@@ -4,18 +4,16 @@ class Database {
     private $db_name = "lugyser";
     private $username = "root";
     private $password = "";
-    private $conn;
+    public $conn;
 
     public function getConnection() {
         $this->conn = null;
-
         try {
             $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->db_name, $this->username, $this->password);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $exception) {
-            error_log("Error de conexión: " . $exception->getMessage());
+        } catch (PDOException $e) {
+            echo "Connection error: " . $e->getMessage();
         }
-
         return $this->conn;
     }
 }

@@ -7,13 +7,19 @@ class RolModel {
     }
 
     public function obtenerRolesPorUsuario($idusuario) {
-        $query = "SELECT r.nombre_rol FROM usuario_has_rol uhr
-                  JOIN rol r ON uhr.rol_idrol = r.idrol
-                  WHERE uhr.usuario_idusuario = :idusuario AND uhr.estado = 'activo'";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':idusuario', $idusuario);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC); // Verifica que devuelva correctamente los roles
+        try {
+            $query = "SELECT r.nombre_rol 
+                      FROM usuario_has_rol ur
+                      JOIN rol r ON ur.rol_idrol = r.idrol
+                      WHERE ur.usuario_idusuario = :idusuario AND ur.estado = 'activo'";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':idusuario', $idusuario, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error en obtenerRolesPorUsuario: " . $e->getMessage());
+            return [];
+        }
     }
 
     public function reemplazarRolClientePorProveedor($idusuario) {

@@ -1,57 +1,22 @@
 <?php
 session_start();
-if (!isset($_SESSION['usuario'])) {
-    header("Location: ../views/login.php"); // Redirigir al formulario de inicio de sesión si no hay sesión
-    exit;
-}
-
-// Verificar si el usuario tiene el rol de proveedor o administrador
-$rolesPermitidos = ['proveedor', 'administrador'];
-$esPermitido = in_array($_SESSION['roles'][0]['nombre_rol'], $rolesPermitidos);
-
-if (!$esPermitido) {
-    header("Location: ../index.php"); // Redirigir al inicio si no tiene permisos
+if (!isset($_SESSION['usuario']) || !in_array('proveedor', array_column($_SESSION['roles'], 'nombre_rol'))) {
+    header("Location: ../index.php"); // Redirigir al nuevo index.php si no hay sesión o no tiene el rol de proveedor
     exit;
 }
 
 require_once '../config/database.php';
+require_once '../models/LugarModel.php';
 
 $db = new Database();
 $conn = $db->getConnection();
+$lugarModel = new LugarModel($conn);
 
-// Verificar si la conexión a la base de datos es válida
-if (!$conn) {
-    die("Error al conectar con la base de datos.");
-}
+$usuarioNombre = $_SESSION['usuario']['nombre'];
 
-// Obtener la lista de lugares publicados por el proveedor que ha iniciado sesión
-$idusuario = $_SESSION['usuario']['idusuario'];
-error_log("ID del usuario en sesión: " . $idusuario);
-
-$query = "SELECT idlugar, nombre_lugar, descripcion_lugar, imagen_lugar 
-          FROM lugar 
-          WHERE usuario_has_rol_usuario_idusuario = :idusuario";
-$stmt = $conn->prepare($query);
-$stmt->bindParam(':idusuario', $idusuario, PDO::PARAM_INT);
-
-try {
-    $stmt->execute();
-    $lugares = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Depuración: Verificar si se obtuvieron resultados
-    if (empty($lugares)) {
-        error_log("No se encontraron lugares para el usuario con ID: $idusuario");
-    } else {
-        error_log("Se encontraron " . count($lugares) . " lugares para el usuario con ID: $idusuario");
-    }
-} catch (PDOException $e) {
-    die("Error al obtener los lugares: " . $e->getMessage());
-}
-
-// Redirigir a la misma página después de publicar una finca
-if (isset($_GET['publicado']) && $_GET['publicado'] === 'true') {
-    echo "<script>alert('Finca publicada exitosamente.'); window.location.href='proveedor_dashboard.php';</script>";
-}
+// Obtener los lugares publicados por el proveedor
+$usuarioId = $_SESSION['usuario']['idusuario'];
+$lugares = $lugarModel->obtenerLugaresPorUsuario($usuarioId);
 ?>
 
 <!DOCTYPE html>
@@ -59,13 +24,12 @@ if (isset($_GET['publicado']) && $_GET['publicado'] === 'true') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard del Proveedor - Lugyser</title>
+    <title>Dashboard Proveedor</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color:rgb(249, 250, 248);
-            color: #333;
+            background-color: #f8f9fa;
         }
         .navbar {
             background-color: #28a745;
@@ -74,11 +38,33 @@ if (isset($_GET['publicado']) && $_GET['publicado'] === 'true') {
             color: white;
             font-weight: bold;
         }
-        .container {
-            margin-top: 2rem;
+        .navbar .ml-auto a {
+            margin-left: 10px;
+        }
+        .card-img-top {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
         }
         .card {
-            margin-bottom: 1rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .container h1 {
+            color: #28a745;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -86,38 +72,47 @@ if (isset($_GET['publicado']) && $_GET['publicado'] === 'true') {
     <!-- Barra de navegación -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand" href="proveedor_dashboard.php">Lugyser - Proveedor</a>
+            <a class="navbar-brand" href="#">Proveedor Dashboard</a>
             <div class="ml-auto">
-                <a href="listar_fincas.php?proveedor_id=<?php echo $_SESSION['usuario']['idusuario']; ?>" class="btn btn-info btn-sm">Listar Fincas</a> <!-- Enlace actualizado -->
-                <a href="../logout.php" class="btn btn-danger btn-sm">Cerrar Sesión</a>
+                <?php if (isset($_SESSION['usuario'])): ?>
+                    <a href="../controllers/logout.php" class="btn btn-danger btn-sm">Cerrar Sesión</a>
+                <?php else: ?>
+                    <a href="../views/login.php" class="btn btn-light btn-sm">Iniciar Sesión</a>
+                    <a href="../views/register.php" class="btn btn-light btn-sm">Registrarse</a>
+                <?php endif; ?>
             </div>
         </div>
     </nav>
 
-    <div class="container">
-        <h1 class="text-center">Dashboard del Proveedor</h1>
-        <div class="text-center mb-4">
-            <a href="publicar_finca.php" class="btn btn-primary">Publicar Nueva Finca</a> <!-- Botón accesible para ambos roles -->
-            <a href="reservar_finca.php" class="btn btn-secondary">Realizar Reserva</a>
+    <div class="container mt-5">
+        <h1 class="text-center">Mis Fincas Publicadas</h1>
+        <div class="row text-center mt-4">
+            <div class="col-md-6">
+                <a href="publicar_finca.php" class="btn btn-primary btn-block">Publicar Finca</a>
+            </div>
+            <div class="col-md-6">
+                <a href="reservar_finca.php" class="btn btn-primary btn-block">Reservar Finca</a>
+            </div>
         </div>
-
-        <h2 class="text-center">Tus Lugares Publicados</h2>
-        <div class="row">
-            <?php if (empty($lugares)): ?>
-                <p class="text-center text-muted">No tienes lugares publicados. Publica tu primera finca <a href='publicar_finca.php'>aquí</a>.</p>
-            <?php else: ?>
+        <div class="row mt-5">
+            <?php if (!empty($lugares)): ?>
                 <?php foreach ($lugares as $lugar): ?>
-                    <div class="col-md-4">
+                    <div class="col-md-4 mb-4">
                         <div class="card">
-                            <img src="data:image/jpeg;base64,<?php echo base64_encode($lugar['imagen_lugar']); ?>" class="card-img-top" alt="Imagen del lugar">
+                            <img src="data:image/jpeg;base64,<?php echo base64_encode($lugar['imagen_lugar']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($lugar['nombre_lugar']); ?>">
                             <div class="card-body">
                                 <h5 class="card-title"><?php echo htmlspecialchars($lugar['nombre_lugar']); ?></h5>
                                 <p class="card-text"><?php echo htmlspecialchars($lugar['descripcion_lugar']); ?></p>
-                                <a href="editar_lugar.php?id=<?php echo $lugar['idlugar']; ?>" class="btn btn-warning">Editar</a>
+                                <div class="btn-group">
+                                    <a href="editar_lugar.php?id=<?php echo $lugar['idlugar']; ?>" class="btn btn-warning btn-sm">Editar</a>
+                                    <a href="../controllers/eliminar_lugar.php?id=<?php echo $lugar['idlugar']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de que desea eliminar este lugar?');">Eliminar</a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 <?php endforeach; ?>
+            <?php else: ?>
+                <p class="text-center">No tienes lugares publicados. <a href="publicar_finca.php" class="btn btn-primary btn-sm">Publicar Finca</a></p>
             <?php endif; ?>
         </div>
     </div>

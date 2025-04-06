@@ -1,7 +1,9 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 if (!isset($_SESSION['usuario']) || !in_array('administrador', array_column($_SESSION['roles'], 'nombre_rol'))) {
-    header("Location: ../views/login.php");
+    header("Location: ../index.php");
     exit;
 }
 
@@ -10,16 +12,14 @@ require_once '../config/database.php';
 $db = new Database();
 $conn = $db->getConnection();
 
-// Obtener la lista de usuarios que no tienen el rol de proveedor
-$queryUsuarios = "
-    SELECT u.idusuario, u.nombre, u.apellido, u.nombre_usuario 
-    FROM usuario u
-    LEFT JOIN usuario_has_rol ur ON u.idusuario = ur.usuario_idusuario AND ur.rol_idrol = 2
-    WHERE ur.rol_idrol IS NULL
-";
+// Obtener la lista de usuarios
+$queryUsuarios = "SELECT idusuario, nombre, apellido, nombre_usuario FROM usuario";
 $stmtUsuarios = $conn->prepare($queryUsuarios);
 $stmtUsuarios->execute();
 $usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
+
+// Incluir el controlador para manejar la asignación de roles
+include '../controllers/asignar_rol.php';
 ?>
 
 <!DOCTYPE html>
@@ -27,7 +27,7 @@ $usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asignar Rol Proveedor</title>
+    <title>Asignar Rol</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
@@ -36,51 +36,68 @@ $usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
             color: #333;
         }
         .container {
-            margin-top: 2rem;
+            max-width: 600px;
+            margin-top: 50px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .card {
-            margin-bottom: 1.5rem;
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #28a745;
         }
-        .card-title {
-            font-size: 1.25rem;
+        .btn-primary {
+            background-color: #28a745;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #218838;
+        }
+        .alert {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="text-center">Asignar Rol Proveedor</h1>
-
-        <!-- Mostrar mensajes de éxito o error -->
-        <?php if (isset($_GET['mensaje']) && $_GET['mensaje'] === 'rol_asignado'): ?>
-            <div class="alert alert-success text-center">Rol asignado correctamente.</div>
-        <?php elseif (isset($_GET['error']) && $_GET['error'] === 'fallo'): ?>
-            <div class="alert alert-danger text-center">Error al asignar el rol. Inténtelo nuevamente.</div>
-        <?php endif; ?>
-
-        <div class="row">
-            <?php if (!empty($usuarios)): ?>
-                <?php foreach ($usuarios as $usuario): ?>
-                    <div class="col-md-4 col-sm-6">
-                        <div class="card shadow">
-                            <div class="card-body text-center">
-                                <h5 class="card-title"><?php echo htmlspecialchars($usuario['nombre'] . ' ' . $usuario['apellido']); ?></h5>
-                                <p class="card-text">Usuario: <?php echo htmlspecialchars($usuario['nombre_usuario']); ?></p>
-                                <form action="../controllers/asignar_rol.php" method="POST">
-                                    <input type="hidden" name="usuario_id" value="<?php echo $usuario['idusuario']; ?>">
-                                    <input type="hidden" name="rol_id" value="2"> <!-- Rol Proveedor -->
-                                    <button type="submit" class="btn btn-primary">Asignar Rol Proveedor</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <p class="text-center">No hay usuarios disponibles para asignar el rol de proveedor.</p>
-            <?php endif; ?>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Asignar Rol</a>
+            <div class="ml-auto">
+                <?php if (isset($_SESSION['usuario'])): ?>
+                    <a href="../controllers/logout.php" class="btn btn-danger btn-sm">Cerrar Sesión</a>
+                <?php else: ?>
+                    <a href="../views/login.php" class="btn btn-light btn-sm">Iniciar Sesión</a>
+                    <a href="../views/register.php" class="btn btn-light btn-sm">Registrarse</a>
+                <?php endif; ?>
+            </div>
         </div>
+    </nav>
+    <div class="container">
+        <h1>Asignar Rol</h1>
+        <?php if (!empty($mensaje)) echo $mensaje; ?>
+        <form method="POST" action="asignar_rol.php">
+            <div class="form-group">
+                <label for="usuario_id">Seleccionar Usuario</label>
+                <select name="usuario_id" id="usuario_id" class="form-control" required>
+                    <?php foreach ($usuarios as $usuario): ?>
+                        <option value="<?php echo $usuario['idusuario']; ?>">
+                            <?php echo $usuario['nombre'] . ' ' . $usuario['apellido'] . ' (' . $usuario['nombre_usuario'] . ')'; ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="form-group mt-3">
+                <label for="rol">Seleccionar Rol</label>
+                <select name="rol" id="rol" class="form-control" required>
+                    <option value="administrador">Administrador</option>
+                    <option value="proveedor">Proveedor</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block mt-4">Asignar Rol</button>
+        </form>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

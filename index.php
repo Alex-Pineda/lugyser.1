@@ -10,12 +10,15 @@ $usuarioModel = new UsuarioModel($db->getConnection());
 $rolModel = new RolModel($db->getConnection());
 $authController = new AuthController($usuarioModel, $rolModel);
 
-// Verificar si las claves existen en $_POST antes de acceder a ellas
-$nombre_usuario = isset($_POST['nombre_usuario']) ? $_POST['nombre_usuario'] : '';
-$contrasena = isset($_POST['contrasena']) ? $_POST['contrasena'] : '';
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $authController->login($nombre_usuario, $contrasena);
+    $nombre_usuario = isset($_POST['nombre_usuario']) ? $_POST['nombre_usuario'] : null;
+    $contrasena = isset($_POST['contrasena']) ? $_POST['contrasena'] : null;
+
+    if ($nombre_usuario && $contrasena) {
+        $authController->login($nombre_usuario, $contrasena);
+    } else {
+        echo "<script>alert('Por favor, complete todos los campos.');</script>";
+    }
 }
 ?>
 
@@ -72,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .mb-3 {
             border-radius: 50%; /* Hacer las imágenes circulares */
             width: 100px; /* Establecer un ancho fijo */
-            height: 0px; /* Establecer un alto fijo */
+            height: 70px; /* Establecer un alto fijo */
             object-fit: cover; /* Ajustar la imagen dentro del contenedor */
         }
     </style>
@@ -85,10 +88,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a class="navbar-brand" href="index.php">Lugyser</a>
             <div class="ml-auto">
                 <?php if (!isset($_SESSION['usuario'])): ?>
-                    <a href="views/login.php" class="btn btn-light btn-sm">Iniciar Sesión</a> <!-- Redirige correctamente a login.php -->
+                    <a href="views/login.php" class="btn btn-light btn-sm">Iniciar Sesión</a>
                     <a href="views/register.php" class="btn btn-light btn-sm">Registrarse</a>
                 <?php else: ?>
-                    <a href="logout.php" class="btn btn-danger btn-sm">Cerrar Sesión</a>
+                    <a href="controllers/logout.php" class="btn btn-danger btn-sm">Cerrar Sesión</a>
                 <?php endif; ?>
             </div>
         </div>
@@ -99,9 +102,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h1>Bienvenido a Lugyser</h1>
         <p>Explora y reserva las mejores fincas para tus vacaciones.</p>
         <a href="views/reservar_finca.php" class="btn btn-primary btn-lg">Descubre Lugares</a> <!-- Redirige correctamente a reservar_finca.php -->
-        <?php if (isset($_SESSION['usuario'])): ?>
-            <a href="views/reservar_finca.php" class="btn btn-primary btn-lg">Reservar Finca</a>
-        <?php endif; ?>
     </div>
 
     <!-- Contenido adicional -->
@@ -110,17 +110,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p class="text-center">Ofrecemos las mejores opciones para tus vacaciones, con fincas exclusivas y servicios de calidad.</p>
         <div class="row mt-4">
             <div class="col-md-4 text-center">
-                <img src="https://st.depositphotos.com/1819777/1406/v/450/depositphotos_14060831-stock-illustration-sunset-on-the-beach.jpg" alt="Icono 1" class="mb-3" style="border-radius: 50%; width: 80px; height: 80px; object-fit: cover;">
+                <img src="https://st.depositphotos.com/1819777/1406/v/450/depositphotos_14060831-stock-illustration-sunset-on-the-beach.jpg" alt="Icono 1" class="mb-3" style="width: 80px;">
                 <h4>Fincas Exclusivas</h4>
                 <p>Encuentra las mejores fincas en ubicaciones privilegiadas.</p>
             </div>
             <div class="col-md-4 text-center">
-                <img src="https://img.freepik.com/fotos-premium/icono-candado-ciberseguridad-concepto-red-digital-big-data_1034910-2403.jpg" alt="Reservas Seguras" class="mb-3" style="border-radius: 50%; width: 80px; height: 80px; object-fit: cover;">
+                <img src="https://img.freepik.com/fotos-premium/icono-candado-ciberseguridad-concepto-red-digital-big-data_1034910-2403.jpg" alt="Icono 2" class="mb-3" style="width: 80px;">
                 <h4>Reservas Seguras</h4>
                 <p>Garantizamos la seguridad en todas tus reservas.</p>
             </div>
             <div class="col-md-4 text-center">
-                <img src="https://blog.comparasoftware.com/wp-content/uploads/2021/02/dinamica-de-servicio-al-cliente-768x432.png" alt="Icono 3" class="mb-3" style="border-radius: 50%; width: 80px; height: 80px; object-fit: cover;">
+                <img src="https://blog.comparasoftware.com/wp-content/uploads/2021/02/dinamica-de-servicio-al-cliente-768x432.png" alt="Icono 3" class="mb-3" style="width: 80px;">
                 <h4>Atención Personalizada</h4>
                 <p>Estamos aquí para ayudarte en todo momento.</p>
             </div>
@@ -154,12 +154,20 @@ switch ($action) {
         }
         break;
     case 'register':
-        $controller = new UsuarioController();
-        $success = $controller->register($_POST['nombre'], $_POST['email'], $_POST['password'], $_POST['telefono'], $_POST['direccion'], $_POST['ciudad'], $_POST['pais'], $_POST['codigo_postal']);
-        if ($success === null) {
-            $success = false; // Handle cases where the function might still return void
-        }
-        if ($success !== false) {
+        $datos = [
+            'nombre' => $_POST['nombre'],
+            'apellido' => $_POST['apellido'],
+            'nombre_usuario' => $_POST['nombre_usuario'],
+            'contrasena' => $_POST['contrasena'],
+            'tipo_documento' => $_POST['tipo_documento'],
+            'documento_identidad' => $_POST['documento_identidad'],
+            'email' => $_POST['email'],
+            'telefono' => $_POST['telefono']
+        ];
+
+        $success = $authController->register($datos);
+
+        if ($success) {
             header('Location: ../views/login.php');
         } else {
             echo "Error en el registro.";

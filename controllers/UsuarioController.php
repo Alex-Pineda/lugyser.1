@@ -29,7 +29,7 @@ class UsuarioController {
             } elseif ($user['rol'] === 'proveedor') {
                 header('Location: ../views/proveedor_dashboard.php');
             } else {
-                header('Location: ../views/index.php');
+                header('Location: index.php');
             }
             exit;
         } else {

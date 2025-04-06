@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['usuario'])) {
-    header("Location: ../views/login.php");
+    header("Location: ../index.php"); // Redirigir al nuevo index.php si no hay sesión
     exit;
 }
 
@@ -10,8 +10,8 @@ $rolesPermitidos = ['proveedor', 'administrador'];
 $esAdministrador = in_array('administrador', array_column($_SESSION['roles'], 'nombre_rol'));
 $esProveedor = in_array('proveedor', array_column($_SESSION['roles'], 'nombre_rol'));
 
-if (!$esAdministrador && !$esProveedor) {
-    header("Location: ../index.php");
+if (!in_array($_SESSION['roles'][0]['nombre_rol'], $rolesPermitidos)) {
+    header("Location: ../index.php"); // Redirigir al nuevo index.php si no tiene permisos
     exit;
 }
 
@@ -22,14 +22,22 @@ $db = new Database();
 $conn = $db->getConnection();
 $lugarModel = new LugarModel($conn);
 
-if ($esProveedor) {
-    $lugares = $lugarModel->obtenerLugaresConUsuarioYRol($_SESSION['usuario']['idusuario'], 2);
+// Validar que `idusuario` exista antes de usarlo
+$usuarioId = isset($_SESSION['usuario']['idusuario']) ? $_SESSION['usuario']['idusuario'] : null;
+
+if (isset($_GET['proveedor_id']) && is_numeric($_GET['proveedor_id'])) {
+    error_log("Proveedor ID recibido: " . $_GET['proveedor_id']);
+    $lugares = $lugarModel->obtenerLugaresConUsuarioYRol($_GET['proveedor_id'], 'proveedor');
 } elseif ($esAdministrador) {
     $lugares = $lugarModel->obtenerTodosLosLugares();
+} elseif ($usuarioId !== null) {
+    error_log("ID del usuario en sesión: " . $usuarioId);
+    $lugares = $lugarModel->obtenerLugaresConUsuarioYRol($usuarioId, 'proveedor');
 } else {
     $lugares = [];
 }
 
+// Depuración: Registrar los resultados obtenidos
 error_log("Lugares obtenidos: " . json_encode($lugares));
 ?>
 
@@ -57,10 +65,17 @@ error_log("Lugares obtenidos: " . json_encode($lugares));
             flex-direction: column;
             flex-grow: 1;
         }
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+        .card-text {
+            flex-grow: 1;
+        }
         .btn-group {
             display: flex;
             justify-content: space-between;
-            gap: 10px;
+            gap: 10px; /* Generar un pequeño espacio entre los botones */
         }
         .row-equal-height {
             display: flex;
@@ -72,28 +87,8 @@ error_log("Lugares obtenidos: " . json_encode($lugares));
             margin-bottom: 1rem;
         }
         h1.text-center {
-            height: 80px;
-            color: aliceblue;
-        }
-        @media (max-width: 768px) {
-            .card-img-top {
-                height: 150px;
-            }
-            h1.text-center {
-                font-size: 1.8rem;
-            }
-        }
-        @media (max-width: 576px) {
-            .card-img-top {
-                height: 120px;
-            }
-            h1.text-center {
-                font-size: 1.5rem;
-            }
-            .btn-group {
-                flex-direction: column;
-                gap: 5px;
-            }
+            height: 80px; /* Estilo solicitado */
+            color: aliceblue; /* Estilo solicitado */
         }
     </style>
 </head>
@@ -109,10 +104,10 @@ error_log("Lugares obtenidos: " . json_encode($lugares));
                             <div class="card-body">
                                 <h5 class="card-title"><?php echo htmlspecialchars($lugar['nombre_lugar']); ?></h5>
                                 <p class="card-text"><?php echo htmlspecialchars($lugar['descripcion_lugar']); ?></p>
-                                <?php if ($esAdministrador || $lugar['idusuario'] == $_SESSION['usuario']['idusuario']): ?>
+                                <?php if ($esAdministrador || ($usuarioId !== null && $lugar['idusuario'] == $usuarioId)): ?>
                                     <div class="btn-group">
-                                        <a href="../controllers/editar_lugar.php?id=<?php echo $lugar['idlugar']; ?>" class="btn btn-warning btn-sm">Editar</a>
-                                        <a href="../controllers/eliminar_lugar.php?id=<?php echo $lugar['idlugar']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de que desea eliminar este lugar?');">Eliminar</a>
+                                        <a href="editar_lugar.php?id=<?php echo $lugar['idlugar']; ?>" class="btn btn-warning btn-sm">Editar</a>
+                                        <a href="eliminar_lugar.php?id=<?php echo $lugar['idlugar']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de que desea eliminar este lugar?');">Eliminar</a>
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -121,15 +116,10 @@ error_log("Lugares obtenidos: " . json_encode($lugares));
                 <?php endforeach; ?>
             <?php else: ?>
                 <p class="text-center">
-                    <?php echo $esProveedor ? "No tienes lugares publicados." : "No hay lugares disponibles."; ?>
+                    <?php echo $esProveedor ? "No tienes lugares publicados. <a href='publicar_finca.php' class='btn btn-primary btn-sm'>Publicar Finca</a>" : "No hay lugares disponibles."; ?>
                 </p>
             <?php endif; ?>
         </div>
-        <?php if ($esProveedor): ?>
-            <div class="text-center mt-4">
-                <a href="listar_fincas.php" class="btn btn-primary">Ver Mis Fincas</a>
-            </div>
-        <?php endif; ?>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
@@ -137,4 +127,7 @@ error_log("Lugares obtenidos: " . json_encode($lugares));
 </body>
 </html>
 
-<?php include '../includes/footer.php'; ?>
+<?php
+// Incluir pie de página
+include '../includes/footer.php';
+?>

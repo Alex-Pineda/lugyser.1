@@ -54,6 +54,7 @@ class UsuarioModel {
             return true; // Registro exitoso
         } catch (Exception $e) {
             $this->db->rollBack();
+            error_log("Error al registrar usuario: " . $e->getMessage());
             return false; // Error en el registro
         }
     }

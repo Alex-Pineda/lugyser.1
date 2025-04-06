@@ -1,48 +1,41 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start(); // Inicia la sesión solo si no está activa
+}
+
 require_once '../config/database.php';
+
+if (!isset($_SESSION['usuario']) || !in_array('administrador', array_column($_SESSION['roles'], 'nombre_rol'))) {
+    header("Location: ../index.php");
+    exit;
+}
+
+$mensaje = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $db = new Database();
     $conn = $db->getConnection();
 
-    $usuarioId = $_POST['usuario_id'];
-    $nuevoRolId = $_POST['rol_id'];
+    $usuario_id = intval($_POST['usuario_id']);
+    $rol = trim($_POST['rol']);
 
     try {
-        // Verificar si el usuario ya tiene el rol de proveedor asignado
-        $query = "SELECT * FROM usuario_has_rol WHERE usuario_idusuario = :usuarioId AND rol_idrol = :nuevoRolId";
+        // Asignar el rol al usuario
+        $query = "INSERT INTO usuario_has_rol (usuario_idusuario, rol_idrol, estado)
+                  VALUES (:usuario_id, (SELECT idrol FROM rol WHERE nombre_rol = :rol), 'activo')
+                  ON DUPLICATE KEY UPDATE estado = 'activo'";
         $stmt = $conn->prepare($query);
-        $stmt->bindParam(':usuarioId', $usuarioId, PDO::PARAM_INT);
-        $stmt->bindParam(':nuevoRolId', $nuevoRolId, PDO::PARAM_INT);
-        $stmt->execute();
-        $rolExistente = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->bindParam(':usuario_id', $usuario_id, PDO::PARAM_INT);
+        $stmt->bindParam(':rol', $rol, PDO::PARAM_STR);
 
-        if ($rolExistente) {
-            // Si ya existe la relación, actualizar el estado a 'activo'
-            $query = "UPDATE usuario_has_rol 
-                      SET estado = 'activo' 
-                      WHERE usuario_idusuario = :usuarioId AND rol_idrol = :nuevoRolId";
-            $stmt = $conn->prepare($query);
-            $stmt->bindParam(':usuarioId', $usuarioId, PDO::PARAM_INT);
-            $stmt->bindParam(':nuevoRolId', $nuevoRolId, PDO::PARAM_INT);
-            $stmt->execute();
+        if ($stmt->execute()) {
+            $mensaje = '<div class="alert alert-success text-center">Rol asignado exitosamente.</div>';
         } else {
-            // Si no existe la relación, insertar un nuevo registro
-            $query = "INSERT INTO usuario_has_rol (usuario_idusuario, rol_idrol, estado) 
-                      VALUES (:usuarioId, :nuevoRolId, 'activo')";
-            $stmt = $conn->prepare($query);
-            $stmt->bindParam(':usuarioId', $usuarioId, PDO::PARAM_INT);
-            $stmt->bindParam(':nuevoRolId', $nuevoRolId, PDO::PARAM_INT);
-            $stmt->execute();
+            $mensaje = '<div class="alert alert-danger text-center">No se pudo asignar el rol. Por favor, inténtelo de nuevo.</div>';
         }
-
-        // Redirigir de vuelta a la página asignar_rol.php con un mensaje de éxito
-        header('Location: ../views/admin_dashboard.php?mensaje=rol_asignado');
     } catch (PDOException $e) {
         error_log("Error al asignar rol: " . $e->getMessage());
-        // Redirigir de vuelta a la página asignar_rol.php con un mensaje de error
-        header('Location: ../views/asignar_rol.php?error=fallo');
+        $mensaje = '<div class="alert alert-danger text-center">No se pudo asignar el rol. Por favor, inténtelo de nuevo.</div>';
     }
 }
 ?>

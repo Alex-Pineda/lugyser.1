@@ -12,7 +12,18 @@ class AuthController {
         $usuario = $this->usuarioModel->autenticarUsuario($nombre_usuario, $contrasena);
         if ($usuario) {
             $_SESSION['usuario'] = $usuario;
-            $_SESSION['roles'] = $this->rolModel->obtenerRolesPorUsuario($usuario['idusuario']);
+            $roles = $this->rolModel->obtenerRolesPorUsuario($usuario['idusuario']);
+
+            // Priorizar el rol de proveedor si está presente
+            $proveedorRol = array_filter($roles, function ($rol) {
+                return $rol['nombre_rol'] === 'proveedor';
+            });
+
+            if (!empty($proveedorRol)) {
+                $_SESSION['roles'] = $proveedorRol; // Solo asignar el rol de proveedor
+            } else {
+                $_SESSION['roles'] = $roles; // Asignar todos los roles si no es proveedor
+            }
 
             // Redirigir según el rol
             $this->redirigirSegunRol($_SESSION['roles']);
@@ -30,7 +41,7 @@ class AuthController {
                 header("Location: ../views/proveedor_dashboard.php"); // Redirigir al dashboard de proveedor
                 exit;
             } elseif ($rol['nombre_rol'] === 'cliente') {
-                header("Location: ../views/reservar_finca.php"); // Redirigir al dashboard de cliente
+                header("Location: ../index.php"); // Redirigir al dashboard de cliente
                 exit;
             }
         }
@@ -51,13 +62,18 @@ class AuthController {
     }
 
     public function register($datos) {
-        $resultado = $this->usuarioModel->registrarUsuario($datos);
-        if ($resultado) {
-            header("Location: /lugyser/index.php"); // Redirigir al inicio de sesión después del registro
-            exit;
-        } else {
-            echo "Error al registrar el usuario. Por favor, inténtelo de nuevo.";
+        // Validar datos antes de enviarlos al modelo
+        if (empty($datos['nombre']) || empty($datos['apellido']) || empty($datos['nombre_usuario']) || 
+            empty($datos['contrasena']) || empty($datos['tipo_documento']) || empty($datos['documento_identidad']) || 
+            empty($datos['email']) || empty($datos['telefono'])) {
+            return false; // Datos incompletos
         }
+
+        // Registrar el usuario utilizando el modelo
+        $resultado = $this->usuarioModel->registrarUsuario($datos);
+
+        // Devuelve el resultado del registro
+        return $resultado;
     }
 }
 ?>
