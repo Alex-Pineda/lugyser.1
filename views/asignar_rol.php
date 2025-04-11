@@ -62,23 +62,22 @@ include '../controllers/asignar_rol.php';
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
         <div class="container">
             <a class="navbar-brand" href="#">Asignar Rol</a>
             <div class="ml-auto">
-                <?php if (isset($_SESSION['usuario'])): ?>
-                    <a href="../controllers/logout.php" class="btn btn-danger btn-sm">Cerrar Sesión</a>
-                <?php else: ?>
-                    <a href="../views/login.php" class="btn btn-light btn-sm">Iniciar Sesión</a>
-                    <a href="../views/register.php" class="btn btn-light btn-sm">Registrarse</a>
-                <?php endif; ?>
+                <a href="../controllers/logout.php" class="btn btn-danger btn-sm">Cerrar Sesión</a>
             </div>
         </div>
     </nav>
     <div class="container">
         <h1>Asignar Rol</h1>
-        <?php if (!empty($mensaje)) echo $mensaje; ?>
-        <form method="POST" action="asignar_rol.php">
+        <?php if (!empty($mensaje)): ?>
+            <div class="alert alert-info">
+                <?php echo $mensaje; ?>
+            </div>
+        <?php endif; ?>
+        <form method="POST" action="../controllers/asignar_rol.php">
             <div class="form-group">
                 <label for="usuario_id">Seleccionar Usuario</label>
                 <select name="usuario_id" id="usuario_id" class="form-control" required>

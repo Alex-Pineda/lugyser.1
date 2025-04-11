@@ -1,9 +1,9 @@
 <?php
 session_start();
-require_once './models/UsuarioModel.php';
-require_once './models/RolModel.php';
-require_once './controllers/AuthController.php';
-require_once './config/database.php'; // Archivo que configura la conexión a la base de datos
+require_once __DIR__ . '/models/UsuarioModel.php';
+require_once __DIR__ . '/models/RolModel.php'; // Ajuste de la ruta
+require_once __DIR__ . '/controllers/AuthController.php';
+require_once __DIR__ . '/config/database.php'; // Archivo que configura la conexión a la base de datos
 
 $db = new Database();
 $usuarioModel = new UsuarioModel($db->getConnection());
@@ -35,7 +35,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background-color:rgb(115, 205, 209);
             color: #333;
         }
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: auto;
+            overflow-x: hidden;
+            padding-bottom: 80px; /* Aumenta este valor según necesites */
+        }
+
         .navbar {
+            margin-top: 30px;
             background-color: #28a745;
         }
         .navbar a {
@@ -55,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background-position: center;
             color: white;
             text-align: center;
-            padding: 5rem 1rem;
+            padding: 2rem 1rem;
         }
         .hero h1 {
             font-size: 3rem;
@@ -78,24 +87,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             height: 70px; /* Establecer un alto fijo */
             object-fit: cover; /* Ajustar la imagen dentro del contenedor */
         }
+
+        @media (max-width: 768px) {
+            .hero {
+            padding: 2rem 1rem; /* Más compacto en pantallas pequeñas */
+                }
+        }
+
     </style>
 
 </head>
 <body>
     <!-- Barra de navegación -->
     <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <a class="navbar-brand" href="index.php">Lugyser</a>
-            <div class="ml-auto">
-                <?php if (!isset($_SESSION['usuario'])): ?>
-                    <a href="views/login.php" class="btn btn-light btn-sm">Iniciar Sesión</a>
-                    <a href="views/register.php" class="btn btn-light btn-sm">Registrarse</a>
-                <?php else: ?>
-                    <a href="controllers/logout.php" class="btn btn-danger btn-sm">Cerrar Sesión</a>
-                <?php endif; ?>
-            </div>
+    <div class="container">
+        <a class="navbar-brand" href="index.php">Lugyser</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContenido" aria-controls="navbarContenido" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="navbarContenido">
+            <?php if (!isset($_SESSION['usuario'])): ?>
+                <a href="views/login.php" class="btn btn-light btn-sm mx-1 my-1">Iniciar Sesión</a>
+                <a href="views/register.php" class="btn btn-light btn-sm mx-1 my-1">Registrarse</a>
+            <?php else: ?>
+                <a href="controllers/logout.php" class="btn btn-danger btn-sm mx-1 my-1">Cerrar Sesión</a>
+            <?php endif; ?>
         </div>
-    </nav>
+    </div>
+
+</nav>
+
 
     <!-- Hero Section -->
     <div class="hero">
@@ -126,6 +148,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
 <?php

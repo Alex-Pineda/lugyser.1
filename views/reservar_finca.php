@@ -38,6 +38,14 @@ if ($lugar_id) {
     <link rel="stylesheet" href="../css/Estilos/reservar_finca.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
+        html, body {
+    margin: 0;
+    padding: 0;
+    height: auto;
+    overflow-x: hidden;
+    padding-bottom: 80px; /* Aumenta este valor según necesites */
+}
+
         .card-img-top {
             width: 100%;
             height: auto;

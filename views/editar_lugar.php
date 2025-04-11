@@ -30,6 +30,16 @@ if (!$lugar) {
     <title>Editar Lugar</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
+<style>
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: auto;
+    overflow-x: hidden;
+    padding-bottom: 100px; /* Aumenta este valor según necesites */
+}
+</style>
 <body>
     <div class="container mt-5">
         <h1 class="text-center">Editar Lugar</h1>

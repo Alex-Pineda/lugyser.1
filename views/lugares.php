@@ -25,6 +25,14 @@ $lugares = $stmt->fetchAll(PDO::FETCH_ASSOC);
             background-color: #f8f9fa;
             color: #333;
         }
+        html, body {
+    margin: 0;
+    padding: 0;
+    height: auto;
+    overflow-x: hidden;
+    padding-bottom: 80px; /* Aumenta este valor según necesites */
+}
+
         .container {
             margin-top: 2rem;
         }

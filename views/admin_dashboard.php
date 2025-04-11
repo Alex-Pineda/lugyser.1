@@ -31,8 +31,17 @@ $usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
             font-family: 'Roboto', sans-serif;
             background-color: #f8f9fa;
         }
+        html, body {
+    margin-right: 8px;
+    padding: 0;
+    height: auto;
+    overflow-x: hidden;
+    padding-bottom: 80px; /* Aumenta este valor según necesites */
+}
+
         .navbar {
             background-color: #007bff;
+            margin-top: 30px;
         }
         .navbar a {
             color: white;
@@ -48,9 +57,10 @@ $usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
         .btn-primary {
             background-color: #007bff;
             border: none;
+            margin-bottom: 15px; /* espacio entre botones */
         }
         .btn-primary:hover {
-            background-color: #0056b3;
+            background-color:rgb(28, 204, 192);
         }
         .btn-danger {
             background-color: #dc3545;

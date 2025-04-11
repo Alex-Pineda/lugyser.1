@@ -12,11 +12,15 @@ $db = new Database();
 $conn = $db->getConnection();
 $lugarModel = new LugarModel($conn);
 
-$usuarioNombre = $_SESSION['usuario']['nombre'];
+// Obtener el ID del usuario en sesión
+$usuarioId = $_SESSION['usuario']['idusuario'];
 
 // Obtener los lugares publicados por el proveedor
-$usuarioId = $_SESSION['usuario']['idusuario'];
 $lugares = $lugarModel->obtenerLugaresPorUsuario($usuarioId);
+
+if (!$lugares) {
+    error_log("No se encontraron fincas publicadas para el usuario con ID {$usuarioId}.");
+}
 ?>
 
 <!DOCTYPE html>
@@ -31,8 +35,16 @@ $lugares = $lugarModel->obtenerLugaresPorUsuario($usuarioId);
             font-family: 'Roboto', sans-serif;
             background-color: #f8f9fa;
         }
+        html, body {
+    margin: 0;
+    padding: 0;
+    height: auto;
+    overflow-x: hidden;
+    padding-bottom: 80px; /* Aumenta este valor según necesites */
+}
         .navbar {
             background-color: #28a745;
+            margin-top: 30px;
         }
         .navbar a {
             color: white;
@@ -60,8 +72,15 @@ $lugares = $lugarModel->obtenerLugaresPorUsuario($usuarioId);
         .btn-group {
             display: flex;
             justify-content: space-between;
-            gap: 10px;
         }
+        .btn {
+            margin-bottom: 15px; /* espacio entre botones */
+            display: block;
+            margin: 10px auto; /* Los centra automáticamente horizontalmente */
+            width: fit-content; /* Hace que el ancho del botón se ajuste al contenido */
+
+        }
+
         .container h1 {
             color: #28a745;
             font-weight: bold;
@@ -74,12 +93,7 @@ $lugares = $lugarModel->obtenerLugaresPorUsuario($usuarioId);
         <div class="container">
             <a class="navbar-brand" href="#">Proveedor Dashboard</a>
             <div class="ml-auto">
-                <?php if (isset($_SESSION['usuario'])): ?>
-                    <a href="../controllers/logout.php" class="btn btn-danger btn-sm">Cerrar Sesión</a>
-                <?php else: ?>
-                    <a href="../views/login.php" class="btn btn-light btn-sm">Iniciar Sesión</a>
-                    <a href="../views/register.php" class="btn btn-light btn-sm">Registrarse</a>
-                <?php endif; ?>
+                <a href="../controllers/logout.php" class="btn btn-danger btn-sm">Cerrar Sesión</a>
             </div>
         </div>
     </nav>

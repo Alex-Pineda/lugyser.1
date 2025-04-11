@@ -82,6 +82,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css">
     <style>
+        html, body {
+    margin: 0;
+    padding: 0;
+    height: auto;
+    overflow-x: hidden;
+    padding-bottom: 80px; /* Aumenta este valor según necesites */
+}
+
         .form-container {
             max-width: 55%; /* Aumentar el ancho del formulario al 55% */
             margin: 0 auto;

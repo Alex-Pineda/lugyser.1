@@ -19,6 +19,14 @@ if (class_exists('ReservaController')) {
     <title>Reservas Realizadas</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
+        html, body {
+    margin: 0;
+    padding: 0;
+    height: auto;
+    overflow-x: hidden;
+    padding-bottom: 100px; /* Aumenta este valor según necesites */
+}
+
         .table-responsive {
             overflow-x: auto;
         }
