@@ -64,17 +64,17 @@ class LugarModel {
             $stmt->bindParam(':rolNombre', $rolNombre, PDO::PARAM_STR);
             $stmt->execute();
             $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+    
             // Depuración: Registrar los resultados obtenidos
             error_log("Resultados obtenidos en obtenerLugaresConUsuarioYRol: " . json_encode($resultados));
-
+    
             return $resultados;
         } catch (PDOException $e) {
             error_log("Error en obtenerLugaresConUsuarioYRol: " . $e->getMessage());
             return [];
         }
     }
-
+    
     public function eliminarLugar($idlugar) {
         try {
             $query = "DELETE FROM lugar WHERE idlugar = :idlugar";

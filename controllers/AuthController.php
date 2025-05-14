@@ -41,7 +41,7 @@ class AuthController {
                 header("Location: ../views/proveedor_dashboard.php"); // Redirigir al dashboard de proveedor
                 exit;
             } elseif ($rol['nombre_rol'] === 'cliente') {
-                header("Location: ../index.php"); // Redirigir al dashboard de cliente
+                header("Location: ../listar_fincas.php"); // Redirigir al dashboard de cliente
                 exit;
             }
         }

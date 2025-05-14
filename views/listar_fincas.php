@@ -1,9 +1,5 @@
 <?php
 session_start();
-if (!isset($_SESSION['usuario'])) {
-    header("Location: ../index.php"); // Redirigir al nuevo index.php si no hay sesión
-    exit;
-}
 
 // Permitir acceso a proveedores y administradores
 $rolesPermitidos = ['proveedor', 'administrador'];

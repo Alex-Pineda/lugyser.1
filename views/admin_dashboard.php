@@ -31,13 +31,14 @@ $usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
             font-family: 'Roboto', sans-serif;
             background-color: #f8f9fa;
         }
-        html, body {
-    margin-right: 8px;
-    padding: 0;
-    height: auto;
-    overflow-x: hidden;
-    padding-bottom: 80px; /* Aumenta este valor según necesites */
-}
+        
+         html, body {
+            margin-right: 8px;
+            padding: 0;
+            height: auto;
+            overflow-x: hidden;
+            padding-bottom: 80px; /* Aumenta este valor según necesites */
+        }
 
         .navbar {
             background-color: #007bff;
@@ -74,7 +75,7 @@ $usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
     <!-- Barra de navegación -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand" href="#">Administrador Dashboard</a>
+            <a class="navbar-brand" href="views/admin_dashboard.php">Bienvenido <?php echo htmlspecialchars($_SESSION['usuario']['nombre']); ?></a>
             <div class="ml-auto">
                 <?php if (isset($_SESSION['usuario'])): ?>
                     <a href="../controllers/logout.php" class="btn btn-danger btn-sm">Cerrar Sesión</a>

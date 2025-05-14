@@ -91,7 +91,8 @@ if (!$lugares) {
     <!-- Barra de navegación -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand" href="#">Proveedor Dashboard</a>
+            <a class="navbar-brand" href="#">Bienvenido, <?php echo htmlspecialchars($_SESSION['usuario']['nombre']); ?></a>
+
             <div class="ml-auto">
                 <a href="../controllers/logout.php" class="btn btn-danger btn-sm">Cerrar Sesión</a>
             </div>
@@ -99,7 +100,6 @@ if (!$lugares) {
     </nav>
 
     <div class="container mt-5">
-        <h1 class="text-center">Mis Fincas Publicadas</h1>
         <div class="row text-center mt-4">
             <div class="col-md-6">
                 <a href="publicar_finca.php" class="btn btn-primary btn-block">Publicar Finca</a>

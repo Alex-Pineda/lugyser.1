@@ -5,6 +5,7 @@ require_once __DIR__ . '/models/RolModel.php'; // Ajuste de la ruta
 require_once __DIR__ . '/controllers/AuthController.php';
 require_once __DIR__ . '/config/database.php'; // Archivo que configura la conexión a la base de datos
 
+
 $db = new Database();
 $usuarioModel = new UsuarioModel($db->getConnection());
 $rolModel = new RolModel($db->getConnection());
@@ -27,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página Principal - Lugyser</title>
+    <title>Página Principal - finAntioquia</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
@@ -101,7 +102,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Barra de navegación -->
     <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-        <a class="navbar-brand" href="index.php">Lugyser</a>
+        <a class="navbar-brand" href="index.php">
+        <img src="uploads/FA.jpeg" alt="Logo" width="40" height="40" style="border-radius: 50%;">
+        </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContenido" aria-controls="navbarContenido" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -118,17 +121,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 </nav>
 
-
     <!-- Hero Section -->
     <div class="hero">
-        <h1>Bienvenido a Lugyser</h1>
+        <h1>Bienvenido a finAntioquia</h1>
         <p>Explora y reserva las mejores fincas para tus vacaciones.</p>
         <a href="views/reservar_finca.php" class="btn btn-primary btn-lg">Descubre Lugares</a> <!-- Redirige correctamente a reservar_finca.php -->
     </div>
 
     <!-- Contenido adicional -->
     <div class="container mt-5">
-        <h2 class="text-center">¿Por qué elegir Lugyser?</h2>
+        <h2 class="text-center">¿Por qué elegir finAntioquia?</h2>
         <p class="text-center">Ofrecemos las mejores opciones para tus vacaciones, con fincas exclusivas y servicios de calidad.</p>
         <div class="row mt-4">
             <div class="col-md-4 text-center">
