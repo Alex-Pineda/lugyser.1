@@ -6,11 +6,36 @@ if (!isset($_SESSION['usuario']) || !in_array('administrador', array_column($_SE
 }
 
 require_once '../config/database.php';
+require_once '../models/RolModel.php';
 
 $db = new Database();
 $conn = $db->getConnection();
 
 $usuarioNombre = $_SESSION['usuario']['nombre'];
+$rolModel = new RolModel($conn);
+
+// Procesar formulario al enviar
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $idUsuario = $_POST['usuario_id'];
+    $nombreRol = $_POST['rol'];
+
+    // Validar que el usuario y rol existan
+    $usuarioExiste = $rolModel->verificarUsuarioExiste($idUsuario);
+    $rolExiste = $rolModel->verificarRolExiste($nombreRol);
+
+if ($usuarioExiste && $rolExiste) {
+    $idRol = $rolExiste['idrol'];
+
+    // ✅ Esta es la función correcta
+    $rolModel->asignarRolUnico($idUsuario, $idRol);
+
+    header("Location: admin_dashboard.php?mensaje=rol_asignado");
+    exit;
+    }else {
+        // Mostrar un error si el usuario o rol no existen
+        echo "<div class='alert alert-danger text-center'>Error: Usuario o rol inválido.</div>";
+    }
+}
 
 // Obtener la lista de usuarios
 $queryUsuarios = "SELECT idusuario, nombre, apellido, nombre_usuario FROM usuario";
@@ -120,10 +145,17 @@ $usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
                 <select name="rol" id="rol" class="form-control" required>
                     <option value="administrador">Administrador</option>
                     <option value="proveedor">Proveedor</option>
+                    <option value="cliente">Cliente</option>
                 </select>
             </div>
             <button type="submit" class="btn btn-primary btn-block mt-4">Asignar Rol</button>
         </form>
     </div>
+
+<?php if (isset($_GET['mensaje']) && $_GET['mensaje'] === 'rol_asignado'): ?>
+    <div class="alert alert-success text-center mt-3">
+        Rol asignado correctamente.
+    </div>
+<?php endif; ?>
 </body>
 </html>

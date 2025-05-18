@@ -184,7 +184,7 @@ if ($lugar_id) {
 
                         <div class="d-flex gap-2">
                             <button class="btn btn-primary btn-dynamic" type="submit">Reservar</button>
-                            <a href="listar_fincas.php" class="btn btn-secondary btn-dynamic">Cancelar</a> <!-- Redirigir a listar_fincas.php -->
+                            <a href="../index.php" class="btn btn-secondary btn-dynamic">Cancelar</a> <!-- Redirigir a pagina principal -->
                         </div>
                     </form>
                 </div>
@@ -204,7 +204,7 @@ if ($lugar_id) {
                         </div>
                     </div>
                 <?php else: ?>
-                    <p class="text-muted">Selecciona un lugar para ver los detalles.</p>
+                    <p class="text-muted" style="font-size: 21px; color: #ff5722;">Desliza y selecciona un lugar para ver los detalles.</p>
                 <?php endif; ?>
             </div>
         </div>

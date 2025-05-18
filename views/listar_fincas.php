@@ -1,16 +1,6 @@
 <?php
 session_start();
 
-// Permitir acceso a proveedores y administradores
-$rolesPermitidos = ['proveedor', 'administrador'];
-$esAdministrador = in_array('administrador', array_column($_SESSION['roles'], 'nombre_rol'));
-$esProveedor = in_array('proveedor', array_column($_SESSION['roles'], 'nombre_rol'));
-
-if (!in_array($_SESSION['roles'][0]['nombre_rol'], $rolesPermitidos)) {
-    header("Location: ../index.php"); // Redirigir al nuevo index.php si no tiene permisos
-    exit;
-}
-
 require_once '../config/database.php';
 require_once '../models/LugarModel.php';
 
@@ -18,24 +8,36 @@ $db = new Database();
 $conn = $db->getConnection();
 $lugarModel = new LugarModel($conn);
 
-// Validar que `idusuario` exista antes de usarlo
-$usuarioId = isset($_SESSION['usuario']['idusuario']) ? $_SESSION['usuario']['idusuario'] : null;
+// Inicialización por defecto (visitante)
+$esAdministrador = false;
+$esProveedor = false;
+$usuarioId = null;
+$rolesUsuario = [];
+
+// Si hay sesión activa y roles definidos
+if (isset($_SESSION['roles']) && is_array($_SESSION['roles'])) {
+    $rolesUsuario = array_column($_SESSION['roles'], 'nombre_rol');
+    $esAdministrador = in_array('administrador', $rolesUsuario);
+    $esProveedor = in_array('proveedor', $rolesUsuario);
+    $usuarioId = $_SESSION['usuario']['idusuario'] ?? null;
+}
 
 if (isset($_GET['proveedor_id']) && is_numeric($_GET['proveedor_id'])) {
     error_log("Proveedor ID recibido: " . $_GET['proveedor_id']);
     $lugares = $lugarModel->obtenerLugaresConUsuarioYRol($_GET['proveedor_id'], 'proveedor');
 } elseif ($esAdministrador) {
     $lugares = $lugarModel->obtenerTodosLosLugares();
-} elseif ($usuarioId !== null) {
+} elseif ($usuarioId !== null && $esProveedor) {
     error_log("ID del usuario en sesión: " . $usuarioId);
     $lugares = $lugarModel->obtenerLugaresConUsuarioYRol($usuarioId, 'proveedor');
 } else {
-    $lugares = [];
+    $lugares = $lugarModel->obtenerTodosLosLugares();
 }
 
-// Depuración: Registrar los resultados obtenidos
+
 error_log("Lugares obtenidos: " . json_encode($lugares));
 ?>
+
 
 <!DOCTYPE html>
 <html lang="es">
@@ -108,7 +110,7 @@ error_log("Lugares obtenidos: " . json_encode($lugares));
                             <div class="card-body">
                                 <h5 class="card-title"><?php echo htmlspecialchars($lugar['nombre_lugar']); ?></h5>
                                 <p class="card-text"><?php echo htmlspecialchars($lugar['descripcion_lugar']); ?></p>
-                                <?php if ($esAdministrador || ($usuarioId !== null && $lugar['idusuario'] == $usuarioId)): ?>
+                                <?php if ($esAdministrador || $esProveedor || ($usuarioId !== null && isset($lugar['idusuario']) && $lugar['idusuario'] == $usuarioId)): ?>
                                     <div class="btn-group">
                                         <a href="editar_lugar.php?id=<?php echo $lugar['idlugar']; ?>" class="btn btn-warning btn-sm">Editar</a>
                                         <a href="eliminar_lugar.php?id=<?php echo $lugar['idlugar']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de que desea eliminar este lugar?');">Eliminar</a>

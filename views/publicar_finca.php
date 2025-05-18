@@ -1,9 +1,5 @@
 <?php
 session_start();
-if (!isset($_SESSION['usuario'])) {
-    header("Location: ../index.php"); // Redirigir al nuevo index.php si no hay sesión
-    exit;
-}
 
 // Permitir acceso a proveedores y administradores
 $rolesPermitidos = ['proveedor', 'administrador'];
@@ -41,7 +37,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $usuario_id = $_SESSION['usuario']['idusuario'];
 
     // Asignar el rol correspondiente
-    $rol_id = ($_SESSION['roles'][0]['nombre_rol'] === 'administrador') ? 1 : 2; // 1: Administrador, 2: Proveedor
+    $rol_id = null;
+foreach ($_SESSION['roles'] as $rol) {
+    if ($rol['nombre_rol'] === 'proveedor') {
+        $rol_id = $rol['idrol'];
+        break;
+    }
+}
+
+if ($rol_id === null) {
+    echo "<script>alert('No tienes rol de proveedor asignado.'); window.location.href = '../index.php';</script>";
+    exit;
+}
 
     // Validar campos obligatorios
     if (empty($nombre_lugar) || empty($ubicacion_lugar) || empty($descripcion_lugar) || empty($imagen_lugar)) {

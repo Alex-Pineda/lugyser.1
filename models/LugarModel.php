@@ -41,39 +41,30 @@ class LugarModel {
             return false;
         }
     }
+    public function obtenerLugaresConUsuarioYRol($idusuario, $nombreRol) {
+    try {
+        $query = "
+            SELECT l.*
+            FROM lugar l
+            INNER JOIN usuario_has_rol uhr 
+                ON l.usuario_has_rol_usuario_idusuario = uhr.usuario_idusuario 
+                AND l.usuario_has_rol_rol_idrol = uhr.rol_idrol
+            INNER JOIN rol r 
+                ON uhr.rol_idrol = r.idrol
+            WHERE uhr.usuario_idusuario = :idusuario
+              AND r.nombre_rol = :nombreRol
+        ";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':idusuario', $idusuario, PDO::PARAM_INT);
+        $stmt->bindParam(':nombreRol', $nombreRol, PDO::PARAM_STR);
+        $stmt->execute();
 
-    public function obtenerLugaresConUsuarioYRol($usuarioId, $rolNombre) {
-        try {
-            $query = "
-                SELECT 
-                    lugar.*,
-                    rol.nombre_rol AS nombre_rol
-                FROM 
-                    lugar
-                JOIN 
-                    usuario_has_rol ON lugar.usuario_has_rol_usuario_idusuario = usuario_has_rol.usuario_idusuario
-                    AND lugar.usuario_has_rol_rol_idrol = usuario_has_rol.rol_idrol
-                JOIN 
-                    rol ON usuario_has_rol.rol_idrol = rol.idrol
-                WHERE 
-                    usuario_has_rol.usuario_idusuario = :usuarioId
-                    AND rol.nombre_rol = :rolNombre
-            ";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':usuarioId', $usuarioId, PDO::PARAM_INT);
-            $stmt->bindParam(':rolNombre', $rolNombre, PDO::PARAM_STR);
-            $stmt->execute();
-            $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-            // Depuración: Registrar los resultados obtenidos
-            error_log("Resultados obtenidos en obtenerLugaresConUsuarioYRol: " . json_encode($resultados));
-    
-            return $resultados;
-        } catch (PDOException $e) {
-            error_log("Error en obtenerLugaresConUsuarioYRol: " . $e->getMessage());
-            return [];
-        }
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Error al obtener lugares del proveedor: " . $e->getMessage());
+        return [];
     }
+}
     
     public function eliminarLugar($idlugar) {
         try {

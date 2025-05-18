@@ -7,7 +7,7 @@
 </head>
 <body>
     <header class="bg-primary text-white text-center py-3">
-        <h1>finAntioquia</h1>
+        <h1>FincAntioquia</h1>
     </header>
 </body>
 </html>

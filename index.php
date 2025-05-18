@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página Principal - finAntioquia</title>
+    <title>Página Principal - FincAntioquia</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
@@ -123,14 +123,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- Hero Section -->
     <div class="hero">
-        <h1>Bienvenido a finAntioquia</h1>
+        <h1>Bienvenido a FincAntioquia</h1>
         <p>Explora y reserva las mejores fincas para tus vacaciones.</p>
-        <a href="views/reservar_finca.php" class="btn btn-primary btn-lg">Descubre Lugares</a> <!-- Redirige correctamente a reservar_finca.php -->
+        <a href="views/listar_fincas.php" class="btn btn-primary btn-lg">Ver Lugares</a> <!-- Redirige correctamente a reservar_finca.php -->
     </div>
 
     <!-- Contenido adicional -->
     <div class="container mt-5">
-        <h2 class="text-center">¿Por qué elegir finAntioquia?</h2>
+        <h2 class="text-center">¿Por qué elegir FincAntioquia?</h2>
         <p class="text-center">Ofrecemos las mejores opciones para tus vacaciones, con fincas exclusivas y servicios de calidad.</p>
         <div class="row mt-4">
             <div class="col-md-4 text-center">

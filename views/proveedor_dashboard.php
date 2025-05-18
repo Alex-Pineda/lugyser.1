@@ -16,7 +16,7 @@ $lugarModel = new LugarModel($conn);
 $usuarioId = $_SESSION['usuario']['idusuario'];
 
 // Obtener los lugares publicados por el proveedor
-$lugares = $lugarModel->obtenerLugaresPorUsuario($usuarioId);
+$lugares = $lugarModel->obtenerLugaresConUsuarioYRol($usuarioId, 'proveedor');
 
 if (!$lugares) {
     error_log("No se encontraron fincas publicadas para el usuario con ID {$usuarioId}.");
