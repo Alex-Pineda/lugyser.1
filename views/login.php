@@ -19,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($usuario) {
         $_SESSION['usuario'] = $usuario;
+        $_SESSION['usuario_id'] = $usuario['idusuario'];
         $_SESSION['roles'] = $rolModel->obtenerRolesPorUsuario($usuario['idusuario']);
         foreach ($_SESSION['roles'] as $rol) {
             if ($rol['nombre_rol'] === 'administrador') {

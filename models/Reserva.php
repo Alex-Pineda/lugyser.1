@@ -7,18 +7,18 @@ class Reserva {
     }
 
     public function createReserva($fecha_reserva, $nombre_cliente, $fecha_inicio, 
-                                  $fecha_final, $cantidad_personas, $metodo_pago, $estado_reserva) {
+                                  $fecha_final, $cantidad_personas, $metodo_pago, $estado_reserva, $lugar) {
         $stmt = $this->db->prepare("INSERT INTO reserva 
-            (fecha_reserva, nombre_cliente, fecha_inicio, fecha_final, cantidad_personas, metodo_pago, estado_reserva) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)");
+            (fecha_reserva, nombre_cliente, fecha_inicio, fecha_final, cantidad_personas, metodo_pago, estado_reserva, lugar) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
         if (!$stmt) {
             error_log("Error en la preparación de la consulta: " . $this->db->error);
             return false;
         }
 
-        $stmt->bind_param("ssssiss", $fecha_reserva, $nombre_cliente, $fecha_inicio, 
-                          $fecha_final, $cantidad_personas, $metodo_pago, $estado_reserva);
+        $stmt->bind_param("ssssisss", $fecha_reserva, $nombre_cliente, $fecha_inicio, 
+                          $fecha_final, $cantidad_personas, $metodo_pago, $estado_reserva, $lugar);
 
         $resultado = $stmt->execute();
         $stmt->close();
@@ -39,8 +39,8 @@ class Reserva {
     }
 
     public function updateReserva($idreserva, $data) {
-        $stmt = $this->db->prepare("UPDATE reserva SET fecha_reserva = ?, nombre_cliente = ?, fecha_inicio = ?, fecha_final = ?, cantidad_personas = ?, metodo_pago = ?, estado_reserva = ? WHERE idreserva = ?");
-        $stmt->bind_param("ssssissi", $data['fecha_reserva'], $data['nombre_cliente'], $data['fecha_inicio'], $data['fecha_final'], $data['cantidad_personas'], $data['metodo_pago'], $data['estado_reserva'], $idreserva);
+        $stmt = $this->db->prepare("UPDATE reserva SET fecha_reserva = ?, nombre_cliente = ?, fecha_inicio = ?, fecha_final = ?, cantidad_personas = ?, metodo_pago = ?, estado_reserva = ?, lugar = ? WHERE idreserva = ?");
+        $stmt->bind_param("ssssisssi", $data['fecha_reserva'], $data['nombre_cliente'], $data['fecha_inicio'], $data['fecha_final'], $data['cantidad_personas'], $data['metodo_pago'], $data['estado_reserva'], $data['lugar'], $idreserva);
         return $stmt->execute();
     }
 

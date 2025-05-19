@@ -47,9 +47,11 @@ class ReservaController {
             $data['fecha_final'], 
             $data['cantidad_personas'], 
             $data['metodo_pago'], 
-            $data['estado_reserva']
-        );
+            $data['estado_reserva'],
+            $data['lugar'])?
+            "Reserva registrada exitosamente." : "Error al registrar la reserva.";
     }
+    
 
     public function updateReserva($idreserva, $data) {
         return $this->reserva->updateReserva($idreserva, $data);
@@ -74,4 +76,5 @@ class ReservaController {
         $this->conn->close();
     }
 }
+    $lugar = $_POST['lugar'];  // O $_REQUEST['lugar']
 ?>

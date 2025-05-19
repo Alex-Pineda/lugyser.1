@@ -75,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         'cantidad_habitaciones' => $_POST['cantidad_habitaciones'] ?? null,
         'precio_lugar' => $_POST['precio_lugar'] ?? null,
         'imagen_lugar' => isset($_FILES['imagen_lugar']) ? file_get_contents($_FILES['imagen_lugar']['tmp_name']) : null,
-        'usuario_id' => $_POST['usuario_id'] ?? null,
+        'usuario_id' => $_SESSION['usuario']['idusuario'] ?? null,
         'rol_id' => $rol_id,
         'tipo' => $_POST['tipo'] ?? null,
         'disponibilidad_lugar' => isset($_POST['disponibilidad_lugar']) ? 1 : 0,

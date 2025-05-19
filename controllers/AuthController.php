@@ -12,6 +12,7 @@ class AuthController {
         $usuario = $this->usuarioModel->autenticarUsuario($nombre_usuario, $contrasena);
         if ($usuario) {
             $_SESSION['usuario'] = $usuario;
+            $_SESSION['idusuario'] = $usuario['idusuario'];
             $roles = $this->rolModel->obtenerRolesPorUsuario($usuario['idusuario']);
 
             // Priorizar el rol de proveedor si está presente

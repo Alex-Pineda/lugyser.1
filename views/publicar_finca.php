@@ -63,6 +63,17 @@ if ($rol_id === null) {
         echo "<script>alert('Error al subir la imagen.'); window.history.back();</script>";
         exit;
     }
+    session_start();
+    $usuario_id = $_SESSION['usuario']['idusuario']; // ID del usuario autenticado
+
+    // Obtener ID del rol proveedor
+    $sqlRol = $conn->prepare("SELECT idrol FROM rol WHERE nombre_rol = ?");
+    $nombreRol = 'proveedor';
+    $sqlRol->bind_param("s", $nombreRol);
+    $sqlRol->execute();
+    $sqlRol->bind_result($rol_id);
+    $sqlRol->fetch();
+    $sqlRol->close();
 
     // Insertar los datos en la tabla `lugar`
     $stmt = $conn->prepare("INSERT INTO lugar (nombre_lugar, ubicacion_lugar, descripcion_lugar, cantidad_habitaciones, precio_lugar, tipo, disponibilidad_lugar, cantidad_banos, cantidad_piscinas, juegos_infantiles, zonas_verdes, imagen_lugar, usuario_has_rol_usuario_idusuario, usuario_has_rol_rol_idrol) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");

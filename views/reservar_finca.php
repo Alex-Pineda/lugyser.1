@@ -183,7 +183,7 @@ if ($lugar_id) {
                         </div>
 
                         <div class="d-flex gap-2">
-                            <button class="btn btn-primary btn-dynamic" type="submit">Reservar</button>
+                            <button class="btn btn-primary btn-dynamic" src="finca.jpg" type="submit">Reservar</button>
                             <a href="../index.php" class="btn btn-secondary btn-dynamic">Cancelar</a> <!-- Redirigir a pagina principal -->
                         </div>
                     </form>
@@ -193,6 +193,7 @@ if ($lugar_id) {
             <!-- Imagen y descripción -->
             <div class="col-md-8 col-equal-height text-center image-description-container">
                 <?php if ($lugar): ?>
+                    <input type="hidden" name="lugar" id="nombreLugar" value="">
                     <div class="card p-3 shadow card-equal-height">
                         <img id="imagen" class="img-fluid rounded shadow card-img-top" src="data:image/jpeg;base64,<?php echo base64_encode($lugar['imagen_lugar']); ?>" alt="Finca de recreo">
                         <h2 class="mt-3 text-success fw-bold">Total: $<?php echo $lugar['precio_lugar']; ?></h2>
@@ -254,13 +255,20 @@ if ($lugar_id) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/main.js" defer></script>
     <script src="../js/imagen_aleatorio.js" defer></script>
+
     <script>
+
+        function seleccionarLugar(nombre) {
+        document.getElementById('nombre_lugar').value = nombre;
+        }
+
         function validarFormulario() {
             const nombreCliente = document.getElementById('nombre_cliente').value;
             const fechaInicio = document.getElementById('fecha_inicio').value;
             const fechaFinal = document.getElementById('fecha_final').value;
             const metodoPago = document.getElementById('metodo_pago').value;
             const estadoReserva = document.getElementById('estado_reserva').value;
+            const lugar = document.getElementById('lugar').value;
 
             if (!nombreCliente || !fechaInicio || !fechaFinal || !metodoPago || !estadoReserva) {
                 alert('Por favor, complete todos los campos antes de enviar el formulario.');

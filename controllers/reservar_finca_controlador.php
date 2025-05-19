@@ -26,8 +26,10 @@ class ReservarFincaController {
             $data['fecha_final'], 
             $data['cantidad_personas'], 
             $data['metodo_pago'], 
-            $data['estado_reserva']
-        ) ? "Reserva registrada exitosamente." : "Error al registrar la reserva.";
+            $data['estado_reserva'],
+            $data['lugar'])?
+            "Reserva registrada exitosamente." : "Error al registrar la reserva.";
+            
     }
 
     private function validarDatos($data) {
@@ -57,4 +59,6 @@ $data = [
 $reservarFincaController = new ReservarFincaController();
 $resultado = $reservarFincaController->createReserva($data);
 echo $resultado;
+$lugar = $_POST['lugar'];  // O $_REQUEST['lugar']
+
 ?>
