@@ -23,21 +23,15 @@ if (isset($_SESSION['roles']) && is_array($_SESSION['roles'])) {
 }
 
 if (isset($_GET['proveedor_id']) && is_numeric($_GET['proveedor_id'])) {
-    error_log("Proveedor ID recibido: " . $_GET['proveedor_id']);
     $lugares = $lugarModel->obtenerLugaresConUsuarioYRol($_GET['proveedor_id'], 'proveedor');
 } elseif ($esAdministrador) {
     $lugares = $lugarModel->obtenerTodosLosLugares();
 } elseif ($usuarioId !== null && $esProveedor) {
-    error_log("ID del usuario en sesión: " . $usuarioId);
     $lugares = $lugarModel->obtenerLugaresConUsuarioYRol($usuarioId, 'proveedor');
 } else {
     $lugares = $lugarModel->obtenerTodosLosLugares();
 }
-
-
-error_log("Lugares obtenidos: " . json_encode($lugares));
 ?>
-
 
 <!DOCTYPE html>
 <html lang="es">
@@ -49,13 +43,12 @@ error_log("Lugares obtenidos: " . json_encode($lugares));
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         html, body {
-    margin: 0;
-    padding: 0;
-    height: auto;
-    overflow-x: hidden;
-    padding-bottom: 100px; /* Aumenta este valor según necesites */
-}
-
+            margin: 0;
+            padding: 0;
+            height: auto;
+            overflow-x: hidden;
+            padding-bottom: 100px;
+        }
         .card-img-top {
             width: 100%;
             height: 200px;
@@ -81,7 +74,7 @@ error_log("Lugares obtenidos: " . json_encode($lugares));
         .btn-group {
             display: flex;
             justify-content: space-between;
-            gap: 10px; /* Generar un pequeño espacio entre los botones */
+            gap: 10px;
         }
         .row-equal-height {
             display: flex;
@@ -93,17 +86,35 @@ error_log("Lugares obtenidos: " . json_encode($lugares));
             margin-bottom: 1rem;
         }
         h1.text-center {
-            height: 80px; /* Estilo solicitado */
-            color: aliceblue; /* Estilo solicitado */
+            height: 80px;
+            color: aliceblue;
         }
     </style>
 </head>
 <body class="bg-dark text-white">
     <div class="container mt-5">
         <h1 class="text-center">Listado de Fincas</h1>
+        <form method="GET" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="buscar" class="form-control" placeholder="Buscar finca por nombre..." value="<?php echo isset($_GET['buscar']) ? htmlspecialchars($_GET['buscar']) : ''; ?>">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">Buscar</button>
+                </div>
+            </div>
+        </form>
+        <?php
+        if (isset($_GET['buscar']) && trim($_GET['buscar']) !== '') {
+            $busqueda = trim($_GET['buscar']);
+            $lugares_filtrados = array_filter($lugares, function($lugar) use ($busqueda) {
+                return stripos($lugar['nombre_lugar'], $busqueda) !== false;
+            });
+        } else {
+            $lugares_filtrados = $lugares;
+        }
+        ?>
         <div class="row row-equal-height">
-            <?php if (!empty($lugares)): ?>
-                <?php foreach ($lugares as $lugar): ?>
+            <?php if (!empty($lugares_filtrados)): ?>
+                <?php foreach ($lugares_filtrados as $lugar): ?>
                     <div class="col-md-4 col-equal-height">
                         <div class="card bg-light text-dark shadow">
                             <img src="data:image/jpeg;base64,<?php echo base64_encode($lugar['imagen_lugar']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($lugar['nombre_lugar']); ?>">
@@ -122,7 +133,13 @@ error_log("Lugares obtenidos: " . json_encode($lugares));
                 <?php endforeach; ?>
             <?php else: ?>
                 <p class="text-center">
-                    <?php echo $esProveedor ? "No tienes lugares publicados. <a href='publicar_finca.php' class='btn btn-primary btn-sm'>Publicar Finca</a>" : "No hay lugares disponibles."; ?>
+                    <?php
+                    if (isset($_GET['buscar']) && trim($_GET['buscar']) !== '') {
+                        echo "Lugar no encontrado";
+                    } else {
+                        echo $esProveedor ? "No tienes lugares publicados. <a href='publicar_finca.php' class='btn btn-primary btn-sm'>Publicar Finca</a>" : "No hay lugares disponibles.";
+                    }
+                    ?>
                 </p>
             <?php endif; ?>
         </div>

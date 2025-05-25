@@ -108,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContenido" aria-controls="navbarContenido" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-
+        
         <div class="collapse navbar-collapse justify-content-end" id="navbarContenido">
             <?php if (!isset($_SESSION['usuario'])): ?>
                 <a href="views/login.php" class="btn btn-light btn-sm mx-1 my-1">Iniciar Sesión</a>
@@ -125,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="hero">
         <h1>Bienvenido a FincAntioquia</h1>
         <p>Explora y reserva las mejores fincas para tus vacaciones.</p>
-        <a href="views/listar_fincas.php" class="btn btn-primary btn-lg">Ver Lugares</a> <!-- Redirige correctamente a reservar_finca.php -->
+        <a href="views/listar_fincas.php" class="btn btn-primary btn-lg">Ver Lugares</a> <!-- Redirige correctamente a listar_fincas.php -->
     </div>
 
     <!-- Contenido adicional -->

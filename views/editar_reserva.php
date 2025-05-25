@@ -212,3 +212,7 @@ html, body {
 <?php
 $conn = null;
 ?>
+<?php
+// Incluir pie de página
+include '../includes/footer.php';
+?>

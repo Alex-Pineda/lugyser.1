@@ -151,6 +151,189 @@ $usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
             <button type="submit" class="btn btn-primary btn-block mt-4">Asignar Rol</button>
         </form>
     </div>
+        <div>
+            <h1 class="text-center mt-5">Usuarios Registrados</h1>
+            <div class="row mb-3">
+            <div class="col-md-6">
+                <style>
+                #usuariosPorRolChart {
+                    max-width: 300px;
+                    max-height: 200px;
+                    margin: 0 auto;
+                    display: block;
+                }
+                </style>
+                <input type="text" id="busquedaUsuario" class="form-control" placeholder="Buscar usuario...">
+            </div>
+            <div class="col-md-6 text-right">
+                <div class="btn-group" role="group">
+                <button id="exportExcel" class="btn btn-success">Exportar a Excel</button>
+                <button id="exportPDF" class="btn btn-danger">Exportar a PDF</button>
+                <button id="exportCSV" class="btn btn-info">Exportar a CSV</button>
+                <button id="exportPrint" class="btn btn-secondary">Imprimir</button>
+                <button id="exportCopy" class="btn btn-primary">Copiar</button>
+                </div>
+            </div>
+            </div>
+            <div style="max-height: 300px; overflow-y: auto;">
+            <table class="table table-sm table-bordered mt-2" id="usuariosTable">
+                <thead class="thead-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Usuario</th>
+                    <th>Rol</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($usuarios as $usuario): ?>
+                    <tr>
+                    <td><?php echo $usuario['idusuario']; ?></td>
+                    <td><?php echo $usuario['nombre'] . ' ' . $usuario['apellido']; ?></td>
+                    <td><?php echo $usuario['nombre_usuario']; ?></td>
+                    <td><?php echo implode(', ', array_column($rolModel->obtenerRolesPorUsuario($usuario['idusuario']), 'nombre_rol')); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+            </div>
+            <!-- Gráfica de usuarios por rol -->
+            <div class="mt-5">
+            <h2 class="text-center">Distribución de Usuarios por Rol</h2>
+            <canvas id="usuariosPorRolChart" height="100"></canvas>
+            </div>
+            <?php
+            // Calcular conteo de usuarios por rol
+            $roles = ['administrador', 'proveedor', 'cliente'];
+            $conteoRoles = array_fill_keys($roles, 0);
+            foreach ($usuarios as $usuario) {
+            $rolesUsuario = array_column($rolModel->obtenerRolesPorUsuario($usuario['idusuario']), 'nombre_rol');
+            foreach ($rolesUsuario as $rol) {
+                if (isset($conteoRoles[$rol])) {
+                $conteoRoles[$rol]++;
+                }
+            }
+            }
+            ?>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+            const ctx = document.getElementById('usuariosPorRolChart').getContext('2d');
+            const usuariosPorRolChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Administrador', 'Proveedor', 'Cliente'],
+                datasets: [{
+                data: [
+                    <?php echo $conteoRoles['administrador']; ?>,
+                    <?php echo $conteoRoles['proveedor']; ?>,
+                    <?php echo $conteoRoles['cliente']; ?>
+                ],
+                backgroundColor: [
+                    'rgba(0, 123, 255, 0.7)',
+                    'rgba(40, 167, 69, 0.7)',
+                    'rgba(255, 193, 7, 0.7)'
+                ],
+                borderColor: [
+                    'rgba(0, 123, 255, 1)',
+                    'rgba(40, 167, 69, 1)',
+                    'rgba(255, 193, 7, 1)'
+                ],
+                borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                    font: {
+                        size: 16
+                    }
+                    }
+                },
+                title: {
+                    display: false
+                }
+                }
+            }
+            });
+
+            // Exportar a CSV
+            document.getElementById('exportCSV').addEventListener('click', function () {
+            let table = document.getElementById('usuariosTable');
+            let rows = Array.from(table.querySelectorAll('tr'));
+            let csv = rows.map(row => {
+                return Array.from(row.querySelectorAll('th,td'))
+                .map(cell => `"${cell.innerText.replace(/"/g, '""')}"`).join(',');
+            }).join('\n');
+            let blob = new Blob([csv], { type: 'text/csv' });
+            let link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'usuarios.csv';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            });
+
+            // Imprimir tabla
+            document.getElementById('exportPrint').addEventListener('click', function () {
+            let printContents = document.getElementById('usuariosTable').outerHTML;
+            let win = window.open('', '', 'height=600,width=800');
+            win.document.write('<html><head><title>Imprimir Usuarios</title>');
+            win.document.write('<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">');
+            win.document.write('</head><body>');
+            win.document.write(printContents);
+            win.document.write('</body></html>');
+            win.document.close();
+            win.print();
+            });
+
+            // Copiar tabla al portapapeles
+            document.getElementById('exportCopy').addEventListener('click', function () {
+            let table = document.getElementById('usuariosTable');
+            let range = document.createRange();
+            range.selectNode(table);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            try {
+                document.execCommand('copy');
+                alert('Tabla copiada al portapapeles');
+            } catch (err) {
+                alert('No se pudo copiar');
+            }
+            window.getSelection().removeAllRanges();
+            });
+            </script>
+        </div>
+        <script>
+        document.getElementById('busquedaUsuario').addEventListener('keyup', function() {
+            var filtro = this.value.toLowerCase();
+            var filas = document.querySelectorAll('#usuariosTable tbody tr');
+            filas.forEach(function(fila) {
+                var texto = fila.textContent.toLowerCase();
+                fila.style.display = texto.indexOf(filtro) > -1 ? '' : 'none';
+            });
+        });
+        </script>
+
+        <!-- Scripts para exportar -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.7.0/jspdf.plugin.autotable.min.js"></script>
+        <script>
+        document.getElementById('exportExcel').addEventListener('click', function () {
+            var wb = XLSX.utils.table_to_book(document.getElementById('usuariosTable'), {sheet:"Usuarios"});
+            XLSX.writeFile(wb, 'usuarios.xlsx');
+        });
+
+        document.getElementById('exportPDF').addEventListener('click', function () {
+            var { jsPDF } = window.jspdf;
+            var doc = new jsPDF();
+            doc.autoTable({ html: '#usuariosTable' });
+            doc.save('usuarios.pdf');
+        });
+        </script>
 
 <?php if (isset($_GET['mensaje']) && $_GET['mensaje'] === 'rol_asignado'): ?>
     <div class="alert alert-success text-center mt-3">
@@ -159,3 +342,7 @@ $usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
 <?php endif; ?>
 </body>
 </html>
+<?php
+// Incluir pie de página
+include '../includes/footer.php';
+?>

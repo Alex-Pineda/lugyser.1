@@ -76,5 +76,5 @@ class ReservaController {
         $this->conn->close();
     }
 }
-    $lugar = $_POST['lugar'];  // O $_REQUEST['lugar']
+   //$lugar = $_POST['lugar'];  // O $_REQUEST['lugar']
 ?>

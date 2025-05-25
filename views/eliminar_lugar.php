@@ -10,4 +10,5 @@ if ($idlugar) {
 
 header('Location: listar_fincas.php');
 exit;
+
 ?>

@@ -14,3 +14,7 @@ if ($idreserva) {
     echo "<script>alert('ID de reserva no proporcionado.'); window.location.href='reservar_finca.php';</script>";
 }
 ?>
+<?php
+// Incluir pie de página
+include '../includes/footer.php';
+?>

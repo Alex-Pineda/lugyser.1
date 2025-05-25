@@ -127,7 +127,54 @@ if ($lugar_id) {
 <body class="bg-dark text-white">
 
     <div id='header-container'></div> <!-- Aquí se insertará el encabezado -->
-    
+   
+    <!-- Barra de búsqueda de lugares -->
+    <div class="container my-4 d-flex align-items-center">
+        <!-- Botón de retroceso con imagen y redirección según rol -->
+        <?php
+        // Determinar la URL de destino según el rol del usuario
+        $backUrl = "javascript:history.back()";
+        if (isset($_SESSION['rol'])) {
+            switch ($_SESSION['rol']) {
+            case 'admin':
+                $backUrl = "../admin_dashboard.php";
+                break;
+            case 'proveedor':
+                $backUrl = "../proveedor_dashboard.php";
+                break;
+            case 'cliente':
+                $backUrl = "./index.php";
+                break;
+            }
+        }
+        ?>
+        <a href="<?php echo $backUrl; ?>" class="mr-3" style="display: flex; align-items: center;">
+            <img src="../uploads/FA.jpeg" alt="Volver" style="height:50px; border-radius: 50%; width:auto; cursor:pointer;">
+        </a>
+        <form method="GET" action="reservar_finca.php" class="d-flex flex-grow-1 justify-content-center">
+            <input type="text" name="buscar_lugar" class="form-control w-50 mr-2" placeholder="Buscar finca por nombre..." value="<?php echo isset($_GET['buscar_lugar']) ? htmlspecialchars($_GET['buscar_lugar']) : ''; ?>">
+            <button type="submit" class="btn btn-primary ml-2">Buscar</button>
+        </form>
+        <?php
+        if (isset($_GET['buscar_lugar'])) {
+            $buscar = trim($_GET['buscar_lugar']);
+            if ($buscar !== '') {
+                $stmt_buscar = $conn->prepare("SELECT * FROM lugar WHERE disponibilidad_lugar = 1 AND nombre_lugar LIKE ?");
+                $like = "%$buscar%";
+                $stmt_buscar->bind_param("s", $like);
+                $stmt_buscar->execute();
+                $resultado_busqueda = $stmt_buscar->get_result();
+                if ($resultado_busqueda->num_rows > 0) {
+                    $row = $resultado_busqueda->fetch_assoc();
+                    header("Location: reservar_finca.php?lugar_id=" . $row['idlugar']);
+                    exit;
+                } else {
+                    echo "<div class='alert alert-warning text-center mt-3'>Lugar no disponible.</div>";
+                }
+            }
+        }
+        ?>
+    </div>
     <main class="container my-5">
         <h1 class="text-center mb-4">Reservar Finca</h1>
         

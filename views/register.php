@@ -144,3 +144,7 @@ html, body {
     </div>
 </body>
 </html>
+<?php
+// Incluir pie de página
+include '../includes/footer.php';
+?>

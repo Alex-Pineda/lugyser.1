@@ -1,5 +1,6 @@
 <?php
 include_once __DIR__ . '/../models/Usuario.php';
+include_once __DIR__ . '/../includes/footer.php';
 
 class UsuarioController {
     private $usuario;

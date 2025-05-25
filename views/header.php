@@ -1,4 +1,4 @@
-<?php
+s<?php
 session_start();
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-success">
@@ -8,6 +8,10 @@ session_start();
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
+            <form class="form-inline my-2 my-lg-0 mr-auto" action="../views/buscar.php" method="get">
+                <input class="form-control mr-sm-2" type="search" name="q" placeholder="Buscar finca..." aria-label="Buscar">
+                <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Buscar</button>
+            </form>
             <ul class="navbar-nav ml-auto">
                 <?php if (!isset($_SESSION['usuario'])): ?>
                     <li class="nav-item">

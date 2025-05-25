@@ -70,3 +70,7 @@ $lugares = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </body>
 </html>
+<?php
+// Incluir pie de página
+include '../includes/footer.php';
+?>
