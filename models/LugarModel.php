@@ -128,5 +128,6 @@ class LugarModel {
             return false;
         }
     }
+
 }
 ?>

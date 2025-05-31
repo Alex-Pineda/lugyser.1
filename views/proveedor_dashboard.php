@@ -30,6 +30,8 @@ if (!$lugares) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Proveedor</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="icon" href="/lugyser/favicon-rounded.ico" type="image/x-icon">
+
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -126,7 +128,7 @@ if (!$lugares) {
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
-                <p class="text-center">No tienes lugares publicados. <a href="publicar_finca.php" class="btn btn-primary btn-sm">Publicar Finca</a></p>
+                <p class="text-center">No tienes lugares publicados.</p>
             <?php endif; ?>
         </div>
     </div>

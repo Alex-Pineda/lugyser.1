@@ -66,15 +66,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css">
+    <link rel="icon" href="/lugyser/favicon-rounded.ico" type="image/x-icon">
+
     <style>
 
-html, body {
-    margin: 0;
-    padding: 0;
-    height: auto;
-    overflow-x: hidden;
-    padding-bottom: 100px; /* Aumenta este valor según necesites */
-}
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: auto;
+            overflow-x: hidden;
+            padding-bottom: 100px; /* Aumenta este valor según necesites */
+        }
 
         .form-container {
             width: 50%; /* Aumentar el tamaño del formulario al 70% */

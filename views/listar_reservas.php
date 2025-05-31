@@ -18,6 +18,8 @@ if (class_exists('ReservaController')) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reservas Realizadas</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="icon" href="/lugyser/favicon-rounded.ico" type="image/x-icon">
+
     <style>
         html, body {
     margin: 0;
@@ -32,9 +34,27 @@ if (class_exists('ReservaController')) {
         }
     </style>
 </head>
+
 <body class="bg-light text-dark">
     <div class="container mt-5">
-        <h1 class="text-center">Reservas Realizadas</h1>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="mb-0">Reservas Realizadas</h1>
+            <form method="get" class="form-inline">
+            <div class="form-group mx-sm-3 mb-2">
+                <input type="text" name="buscar_nombre" class="form-control" placeholder="Buscar por Nombre de Cliente" style="width: 400px;" value="<?php echo isset($_GET['buscar_nombre']) ? htmlspecialchars($_GET['buscar_nombre']) : ''; ?>">
+            </div>
+            <button type="submit" class="btn btn-primary mb-2">Buscar</button>
+            </form>
+        </div>
+        <?php
+        // Filtrar reservas por nombre si se envió el formulario
+        if (isset($_GET['buscar_nombre']) && $_GET['buscar_nombre'] !== '') {
+            $buscar = strtolower(trim($_GET['buscar_nombre']));
+            $reservas = array_filter($reservas, function($reserva) use ($buscar) {
+            return strpos(strtolower($reserva['nombre_cliente']), $buscar) !== false;
+            });
+        }
+        ?>
         <div class="table-responsive">
             <?php if (!empty($reservas)): ?>
                 <table class="table table-striped">

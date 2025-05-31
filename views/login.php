@@ -48,6 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Sesión -  FincAntioquia</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="icon" href="/lugyser/favicon-rounded.ico" type="image/x-icon">
+
 </head>
 <body>
     <div class="container mt-5">
@@ -55,19 +57,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php if (!empty($mensaje)): ?>
             <div class="alert alert-danger"><?php echo $mensaje; ?></div>
         <?php endif; ?>
-        <form method="POST" action="login.php" class="mt-4">
-            <div class="form-group">
-                <label for="nombre_usuario">Nombre de Usuario</label>
-                <input type="text" name="nombre_usuario" id="nombre_usuario" class="form-control" placeholder="Usuario" required>
+        <form method="POST" action="login.php" class="mt-4 d-flex flex-column align-items-center">
+            <div class="form-group w-100" style="max-width: 350px;">
+                <label for="nombre_usuario" class="w-100 text-center">Nombre de Usuario</label>
+                <input type="text" name="nombre_usuario" id="nombre_usuario" class="form-control" placeholder="Usuario" required style="max-width: 450px; margin: 0 auto;">
             </div>
-            <div class="form-group">
-                <label for="contrasena">Contraseña</label>
-                <input type="password" name="contrasena" id="contrasena" class="form-control" placeholder="Contraseña" required>
+            <div class="form-group w-100" style="max-width: 350px;">
+                <label for="contrasena" class="w-100 text-center">Contraseña</label>
+                <input type="password" name="contrasena" id="contrasena" class="form-control" placeholder="Contraseña" required style="max-width: 450px; margin: 0 auto;">
             </div>
-            <button type="submit" class="btn btn-primary btn-block">Iniciar Sesión</button>
+            <button type="submit" class="btn btn-primary btn-block" style="max-width: 350px; width: 100%;">Iniciar Sesión</button>
         </form>
         <div class="text-center mt-3">
-            <a href="../index.php" class="btn btn-secondary">Volver a la Página Principal</a>
+            <a href="../index.php" class="btn btn-secondary" style="max-width: 300px; width: 100%;">Volver a la Página Principal</a>
         </div>
     </div>
 </body>

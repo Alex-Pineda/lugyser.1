@@ -42,5 +42,11 @@ class LugarController {
     public function deleteLugar($idlugar) {
         return $this->lugar->deleteLugar($idlugar);
     }
+
+    public function mostrarMapaLugar($idlugar) {
+        $lugar = $this->lugar->getLugarById($idlugar);
+        include_once __DIR__ . '/../views/ubicacionLugarView.php';
+    }
+
 }
 ?>

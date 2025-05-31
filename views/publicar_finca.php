@@ -99,6 +99,8 @@ if ($rol_id === null) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css">
+    <link rel="icon" href="/lugyser/favicon-rounded.ico" type="image/x-icon">
+
     <style>
         html, body {
     margin: 0;
@@ -263,7 +265,7 @@ if ($rol_id === null) {
 
                 <div class="btn-container">
                     <button class="btn btn-primary" type="submit">Publicar</button>
-                    <button class="btn btn-secondary" type="reset">Cancelar</button>
+                    <button class="btn btn-secondary" type="button" onclick="window.history.back();">Cancelar</button>
                 </div>
             </form>
         </div>

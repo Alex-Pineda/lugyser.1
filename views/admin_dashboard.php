@@ -51,6 +51,8 @@ $usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Administrador</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="icon" href="/lugyser/favicon-rounded.ico" type="image/x-icon">
+
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -100,7 +102,7 @@ $usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
     <!-- Barra de navegación -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand" href="views/admin_dashboard.php">Bienvenido <?php echo htmlspecialchars($_SESSION['usuario']['nombre']); ?></a>
+            <a class="navbar-brand">Bienvenido <?php echo htmlspecialchars($_SESSION['usuario']['nombre']); ?></a>
             <div class="ml-auto">
                 <?php if (isset($_SESSION['usuario'])): ?>
                     <a href="../controllers/logout.php" class="btn btn-danger btn-sm">Cerrar Sesión</a>
@@ -128,28 +130,40 @@ $usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
                 <a href="listar_reservas.php" class="btn btn-primary btn-block">Listar Reservas</a>
             </div>
         </div>
-        <h1 class="text-center mt-5">Asignar Roles</h1>
-        <form method="POST" action="admin_dashboard.php" class="mt-4">
-            <div class="form-group">
+        <div class="row mt-5 align-items-start">
+            <!-- Columna izquierda: Asignar Roles -->
+            <div class="col-md-6">
+            <h1 class="text-center mb-4" style="font-size:1.6rem;">Asignar Roles</h1>
+            <form method="POST" action="admin_dashboard.php" class="mt-2">
+                <div class="form-group">
                 <label for="usuario_id">Seleccionar Usuario</label>
-                <select name="usuario_id" id="usuario_id" class="form-control" required>
+                <select name="usuario_id" id="usuario_id" class="form-control form-control-sm" required>
                     <?php foreach ($usuarios as $usuario): ?>
-                        <option value="<?php echo $usuario['idusuario']; ?>">
-                            <?php echo $usuario['nombre'] . ' ' . $usuario['apellido'] . ' (' . $usuario['nombre_usuario'] . ')'; ?>
-                        </option>
+                    <option value="<?php echo $usuario['idusuario']; ?>">
+                        <?php echo $usuario['nombre'] . ' ' . $usuario['apellido'] . ' (' . $usuario['nombre_usuario'] . ')'; ?>
+                    </option>
                     <?php endforeach; ?>
                 </select>
-            </div>
-            <div class="form-group mt-3">
+                </div>
+                <div class="form-group mt-3">
                 <label for="rol">Seleccionar Rol</label>
-                <select name="rol" id="rol" class="form-control" required>
+                <select name="rol" id="rol" class="form-control form-control-sm" required>
                     <option value="administrador">Administrador</option>
                     <option value="proveedor">Proveedor</option>
                     <option value="cliente">Cliente</option>
                 </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block mt-4">Asignar Rol</button>
+            </form>
             </div>
-            <button type="submit" class="btn btn-primary btn-block mt-4">Asignar Rol</button>
-        </form>
+            <!-- Columna derecha: Gráfica de Distribución de Usuarios por Rol -->
+            <div class="col-md-6 d-flex flex-column align-items-center">
+            <h2 class="text-center mb-3" style="font-size:1.3rem;">Distribución de Usuarios por Rol</h2>
+            <div style="width: 100%; max-width: 260px;">
+                <canvas id="usuariosPorRolChart" height="180" style="display:block; margin:0 auto; max-width:220px;"></canvas>
+            </div>
+            </div>
+        </div>
     </div>
         <div>
             <h1 class="text-center mt-5">Usuarios Registrados</h1>
@@ -196,11 +210,6 @@ $usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
                 <?php endforeach; ?>
                 </tbody>
             </table>
-            </div>
-            <!-- Gráfica de usuarios por rol -->
-            <div class="mt-5">
-            <h2 class="text-center">Distribución de Usuarios por Rol</h2>
-            <canvas id="usuariosPorRolChart" height="100"></canvas>
             </div>
             <?php
             // Calcular conteo de usuarios por rol

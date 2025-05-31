@@ -32,7 +32,9 @@ if (isset($_GET['proveedor_id']) && is_numeric($_GET['proveedor_id'])) {
     $lugares = $lugarModel->obtenerTodosLosLugares();
 }
 ?>
-
+<?php
+include_once __DIR__ . '/../includes/header.php';
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -41,6 +43,8 @@ if (isset($_GET['proveedor_id']) && is_numeric($_GET['proveedor_id'])) {
     <title>Fincas Publicadas</title>
     <link rel="stylesheet" href="../css/Estilos/listar_fincas.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="icon" href="/lugyser/favicon-rounded.ico" type="image/x-icon">
+
     <style>
         html, body {
             margin: 0;
@@ -86,7 +90,7 @@ if (isset($_GET['proveedor_id']) && is_numeric($_GET['proveedor_id'])) {
             margin-bottom: 1rem;
         }
         h1.text-center {
-            height: 80px;
+            height: 50px;
             color: aliceblue;
         }
     </style>

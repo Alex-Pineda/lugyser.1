@@ -44,15 +44,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="/lugyser/favicon-rounded.ico" type="image/x-icon">
+    
     <style>
-
-html, body {
-    margin: 0;
-    padding: 0;
-    height: auto;
-    overflow-x: hidden;
-    padding-bottom: 80px; /* Aumenta este valor según necesites */
-}
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: auto;
+            overflow-x: hidden;
+            padding-bottom: 80px; /* Aumenta este valor según necesites */
+        }
 
         body {
             font-family: 'Roboto', sans-serif;
@@ -101,47 +102,196 @@ html, body {
             <h1>Registrarse</h1>
             <?php echo $mensaje; ?>
             <form action="register.php" method="POST">
-                <div class="form-group">
-                    <label for="nombre">Nombre</label>
-                    <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Ingrese su nombre" required>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="nombre">Nombre</label>
+                        <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Ingrese su nombre" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="apellido">Apellido</label>
+                        <input type="text" id="apellido" name="apellido" class="form-control" placeholder="Ingrese su apellido" required>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="apellido">Apellido</label>
-                    <input type="text" id="apellido" name="apellido" class="form-control" placeholder="Ingrese su apellido" required>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="nombre_usuario">Nombre de Usuario</label>
+                        <input type="text" id="nombre_usuario" name="nombre_usuario" class="form-control" placeholder="Ingrese un nombre de usuario" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="contrasena">Contraseña</label>
+                        <input type="password" id="contrasena" name="contrasena" class="form-control" placeholder="Ingrese una contraseña" required>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="nombre_usuario">Nombre de Usuario</label>
-                    <input type="text" id="nombre_usuario" name="nombre_usuario" class="form-control" placeholder="Ingrese un nombre de usuario" required>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="tipo_documento">Tipo de Documento</label>
+                        <select id="tipo_documento" name="tipo_documento" class="form-control" required>
+                            <option value="CC">Cédula de Ciudadanía</option>
+                            <option value="TI">Tarjeta de Identidad</option>
+                            <option value="CE">Cédula de Extranjería</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="documento_identidad">Número de Documento</label>
+                        <input type="text" id="documento_identidad" name="documento_identidad" class="form-control" placeholder="Ingrese su número de documento" required>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="contrasena">Contraseña</label>
-                    <input type="password" id="contrasena" name="contrasena" class="form-control" placeholder="Ingrese una contraseña" required>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="email">Correo Electrónico</label>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="Ingrese su correo electrónico" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="telefono">Teléfono</label>
+                        <input type="text" id="telefono" name="telefono" class="form-control" placeholder="Ingrese su número de teléfono" required>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="tipo_documento">Tipo de Documento</label>
-                    <select id="tipo_documento" name="tipo_documento" class="form-control" required>
-                        <option value="CC">Cédula de Ciudadanía</option>
-                        <option value="TI">Tarjeta de Identidad</option>
-                        <option value="CE">Cédula de Extranjería</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="documento_identidad">Número de Documento</label>
-                    <input type="text" id="documento_identidad" name="documento_identidad" class="form-control" placeholder="Ingrese su número de documento" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">Correo Electrónico</label>
-                    <input type="email" id="email" name="email" class="form-control" placeholder="Ingrese su correo electrónico" required>
-                </div>
-                <div class="form-group">
-                    <label for="telefono">Teléfono</label>
-                    <input type="text" id="telefono" name="telefono" class="form-control" placeholder="Ingrese su número de teléfono" required>
+                <div class="form-group form-check mt-3">
+                    <input type="checkbox" class="form-check-input" id="aceptar_terminos" name="aceptar_terminos" required>
+                    <label class="form-check-label" for="aceptar_terminos">
+                        Acepto los <a href="#" data-toggle="modal" data-target="#terminosModal">términos y condiciones</a> para el tratamiento de la información personal
+                    </label>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">Registrarse</button>
             </form>
             <p class="text-center mt-3">¿Ya tienes una cuenta? <a href="login.php">Inicia sesión aquí</a></p>
         </div>
     </div>
+
+    <!-- Modal de Términos y Condiciones -->
+    <div class="modal fade" id="terminosModal" tabindex="-1" role="dialog" aria-labelledby="terminosModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="terminosModalLabel">Términos y Condiciones para el Tratamiento de datos Personales</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>
+                📄 TÉRMINOS Y CONDICIONES PARA EL TRATAMIENTO DE DATOS PERSONALES <br><br>
+                1. Responsable del Tratamiento de Datos <br>
+                FincAntioquia, como responsable del tratamiento de datos personales, informa que los datos suministrados por los usuarios al momento del registro serán tratados conforme a los principios de legalidad, 
+                finalidad, libertad, veracidad, transparencia, seguridad y confidencialidad, en cumplimiento de la legislación vigente en materia de protección de datos personales.
+                <br>
+                2. Finalidad del Tratamiento<br>
+                Los datos personales recolectados tienen como finalidad:
+                <br>
+                - Gestionar el acceso y uso de la plataforma web.
+                <br>
+                - Permitir la correcta identificación de los usuarios y autenticación dentro del sistema.
+                <br>
+                - Gestionar las reservas, solicitudes y publicaciones de servicios.
+                <br>
+                - Enviar notificaciones y comunicaciones relacionadas con el uso de la plataforma.
+                <br>
+                - Administrar el perfil y los bienes inmuebles publicados por los proveedores.
+                <br>
+                - Realizar análisis estadísticos y de uso de la plataforma para mejorar los servicios ofrecidos.
+                <br>
+                - Contactar al usuario en relación con el uso de los servicios, notificaciones de la plataforma, actualizaciones y asuntos administrativos.
+                <br>
+                - Enviar información promocional, publicitaria o comercial sobre servicios propios o de terceros, por cualquier canal (email, SMS, mensajería instantánea, entre otros).
+                <br>
+                - Realizar encuestas de satisfacción y estudios de mercado.
+                <br>
+                - Cumplir con las obligaciones legales y contractuales que correspondan.
+                <br><br>
+
+                3. Datos Recolectados<br>
+                Durante el proceso de registro y uso de la plataforma, se podrán recolectar los siguientes datos:
+                <br>
+                Para todos los usuarios:
+                <br>
+                - Nombre completo
+                <br>
+                - Apellido completo
+                <br>
+                - Documento de identidad
+                <br>
+                - Dirección de correo electrónico
+                <br>
+                - Número de teléfono
+                <br>
+                - Dirección de residencia
+                <br>
+                - Información de navegación y uso del sitio
+                <br><br>
+                Para proveedores:
+                <br>
+                - Información de bienes inmuebles (dirección, descripción, fotografías, tarifas, condiciones del inmueble, atracciones turisticas, horarios, entre otros relacionados con el inmueble)
+                <br>
+                Documentación soporte de la propiedad y autorización para publicar
+                <br><br>
+                4. Tratamiento de Bienes Inmuebles de Proveedores
+                <br>
+                El proveedor autoriza expresamente a Lugyser para:
+                <br>
+                - Publicar en la plataforma web y otros medios electrónicos la información relacionada con los bienes inmuebles registrados.
+                <br>
+                - Utilizar las imágenes, descripciones y detalles de los inmuebles para la promoción y comercialización de los mismos
+                <br>
+                - Usar las imágenes, descripciones y detalles de los inmuebles con fines promocionales y comerciales.
+                <br>
+                - Conservar un registro de los inmuebles para fines estadísticos, legales y de trazabilidad.
+                <br><br>
+                5. Autorización para Envío de Mensajería y Comunicaciones
+                <br>
+                El usuario autoriza expresamente a Lugyser para el envío de:
+                <br>
+                - Mensajes de texto (SMS)
+                <br>
+                - Correos electrónicos
+                <br>
+                - Notificaciones dentro de la plataforma
+                <br>
+                - Comunicaciones a través de aplicaciones de mensajería como WhatsApp
+                <br>
+                Estas comunicaciones podrán estar relacionadas con actualizaciones de servicios, confirmación de actividades,
+                 promociones, encuestas, campañas comerciales y demás información relevante del servicio.
+                <br><br>
+                6. Derechos del Titular de los Datos
+                <br>
+                Los usuarios podrán ejercer los siguientes derechos:
+                <br>
+                - Conocer, actualizar y rectificar sus datos personales.
+                <br>
+                - Solicitar la supresión de los datos cuando considere que no están siendo tratados conforme a los principios y normas aplicables.
+                <br>
+                - Revocar la autorización otorgada para el tratamiento de sus datos.
+                <br>
+                - Solicitar prueba de la autorización otorgada.
+                <br>
+                - Estas solicitudes podrán enviarse al correo electrónico de contacto de Lugyser o a través del formulario de contacto dispuesto en la plataforma.
+                <br><br>
+                7. Conservación de la Información
+                <br>
+                - Los datos serán conservados únicamente durante el tiempo que sea necesario para cumplir con los fines del tratamiento, 
+                o mientras exista una relación activa con el usuario, y conforme a los términos legales y contractuales aplicables.
+                <br>
+                8. Modificaciones a los Términos
+                <br><br>
+                FincAntioquia se reserva el derecho de modificar en cualquier momento estos Términos y Condiciones. 
+                Cualquier cambio será informado oportunamente a través del sitio web.
+                <br><br>
+                9. Aceptación
+                <br>
+                Al registrarse y utilizar la plataforma Lugyser, el usuario declara haber leído, comprendido y aceptado los presentes Términos y Condiciones 
+                de tratamiento de datos personales, así como autorizar expresamente el uso de su información en los términos descritos anteriormente.
+            </p>
+            <!-- Puedes agregar más contenido aquí -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts necesarios para el modal de Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 <?php

@@ -1,4 +1,8 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require_once '../models/Reserva.php';
 
 class ReservarFincaController {
@@ -20,29 +24,30 @@ class ReservarFincaController {
         }
 
         return $this->reserva->createReserva(
-            $data['fecha_reserva'], 
-            $data['nombre_cliente'], 
-            $data['fecha_inicio'], 
-            $data['fecha_final'], 
-            $data['cantidad_personas'], 
-            $data['metodo_pago'], 
-            $data['estado_reserva'],
-            $data['lugar'])?
-            "Reserva registrada exitosamente." : "Error al registrar la reserva.";
-            
+        $data['fecha_reserva'], 
+        $data['nombre_cliente'], 
+        $data['fecha_inicio'], 
+        $data['fecha_final'], 
+        $data['cantidad_personas'], 
+        $data['metodo_pago'], 
+        $data['estado_reserva'],
+        $data['lugar_reserva']) ?
+        "Reserva registrada exitosamente." : "Error al registrar la reserva.";
+
     }
 
     private function validarDatos($data) {
         return isset($data['fecha_reserva'], $data['nombre_cliente'], $data['fecha_inicio'], 
-                      $data['fecha_final'], $data['cantidad_personas'], 
-                      $data['metodo_pago'], $data['estado_reserva']) 
-               && $data['cantidad_personas'] > 0;
+                    $data['fecha_final'], $data['cantidad_personas'], 
+                    $data['metodo_pago'], $data['estado_reserva'], $data['lugar_reserva']) 
+            && $data['cantidad_personas'] > 0;
     }
 }
 
 // Verificar si la solicitud es POST
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    exit("Acceso no permitido.");
+    echo "Este script solo se puede acceder mediante POST.";
+    exit;
 }
 
 // Obtener los datos del formulario de manera segura
@@ -53,12 +58,13 @@ $data = [
     'fecha_final' => $_POST['fecha_final'] ?? null,
     'cantidad_personas' => $_POST['cantidad_personas'] ?? 0,
     'metodo_pago' => $_POST['metodo_pago'] ?? 'Efectivo',
-    'estado_reserva' => $_POST['estado_reserva'] ?? 'Pendiente'
+    'estado_reserva' => $_POST['estado_reserva'] ?? 'Pendiente',
+    'lugar_reserva' => $_POST['lugar_reserva'] ?? null
 ];
 
 $reservarFincaController = new ReservarFincaController();
 $resultado = $reservarFincaController->createReserva($data);
-echo $resultado;
-$lugar = $_POST['lugar'];  // O $_REQUEST['lugar']
+
+echo "<script>alert('" . addslashes($resultado) . "'); window.location.href = '../index.php';</script>";
 
 ?>
