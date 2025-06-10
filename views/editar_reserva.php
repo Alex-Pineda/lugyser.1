@@ -21,9 +21,6 @@ if ($id) {
     $reserva = $stmt->fetch(PDO::FETCH_ASSOC); // Cambiar a fetch para PDO
 }
 
-if (isset($_GET['lugar_seleccionado'])) {
-    $reserva['lugar'] = $_GET['lugar_seleccionado']; // Actualizar el lugar en la reserva
-}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre_cliente = $_POST['nombre_cliente'];
@@ -32,19 +29,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cantidad_personas = $_POST['cantidad_personas'];
     $metodo_pago = $_POST['metodo_pago'];
     $estado_reserva = $_POST['estado_reserva'];
-    $nuevo_lugar = $_POST['nuevo_lugar'] ?? null; // Sincronizar nuevo lugar si se selecciona
-
+   
+    
     // Verificar que el ID de la reserva exista para evitar conflictos
     if ($id) {
-        $stmt = $conn->prepare("UPDATE reserva SET nombre_cliente = ?, fecha_inicio = ?, fecha_final = ?, cantidad_personas = ?, metodo_pago = ?, estado_reserva = ?, lugar = ? WHERE idreserva = ?");
+        $stmt = $conn->prepare("UPDATE reserva SET nombre_cliente = ?, fecha_inicio = ?, fecha_final = ?, cantidad_personas = ?, metodo_pago = ?, estado_reserva = ? WHERE idreserva = ?");
         $stmt->bindValue(1, $nombre_cliente, PDO::PARAM_STR);
         $stmt->bindValue(2, $fecha_inicio, PDO::PARAM_STR);
         $stmt->bindValue(3, $fecha_final, PDO::PARAM_STR);
         $stmt->bindValue(4, $cantidad_personas, PDO::PARAM_INT);
         $stmt->bindValue(5, $metodo_pago, PDO::PARAM_STR);
         $stmt->bindValue(6, $estado_reserva, PDO::PARAM_STR);
-        $stmt->bindValue(7, $nuevo_lugar, PDO::PARAM_STR); // Guardar el lugar seleccionado
-        $stmt->bindValue(8, $id, PDO::PARAM_INT);
+        $stmt->bindValue(7, $id, PDO::PARAM_INT);
 
         if ($stmt->execute()) {
             echo "<script>alert('Reserva actualizada exitosamente.'); window.location.href='reservar_finca.php';</script>";

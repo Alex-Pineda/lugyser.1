@@ -49,32 +49,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Iniciar Sesión -  FincAntioquia</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="icon" href="/lugyser/favicon-rounded.ico" type="image/x-icon">
-
+    <style>
+        html, body {
+            height: 100vh;
+        }
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-wrapper {
+            flex: 1 0 auto;
+        }
+        .footer-wrapper {
+            flex-shrink: 0;
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <h1 class="text-center">Iniciar Sesión</h1>
-        <?php if (!empty($mensaje)): ?>
-            <div class="alert alert-danger"><?php echo $mensaje; ?></div>
-        <?php endif; ?>
-        <form method="POST" action="login.php" class="mt-4 d-flex flex-column align-items-center">
-            <div class="form-group w-100" style="max-width: 350px;">
-                <label for="nombre_usuario" class="w-100 text-center">Nombre de Usuario</label>
-                <input type="text" name="nombre_usuario" id="nombre_usuario" class="form-control" placeholder="Usuario" required style="max-width: 450px; margin: 0 auto;">
+    <div class="content-wrapper"style="margin-top: 30px;">
+        <div class="container mt-5">
+            <h1 class="text-center">Iniciar Sesión</h1>
+            <?php if (!empty($mensaje)): ?>
+                <div class="alert alert-danger"><?php echo $mensaje; ?></div>
+            <?php endif; ?>
+            <form method="POST" action="login.php" class="mt-4 d-flex flex-column align-items-center">
+                <div class="form-group w-100" style="max-width: 350px;">
+                    <label for="nombre_usuario" class="w-100 text-center">Nombre de Usuario</label>
+                    <input type="text" name="nombre_usuario" id="nombre_usuario" class="form-control" placeholder="Usuario" required style="max-width: 450px; margin: 0 auto;">
+                </div>
+                <div class="form-group w-100" style="max-width: 350px;">
+                    <label for="contrasena" class="w-100 text-center">Contraseña</label>
+                    <input type="password" name="contrasena" id="contrasena" class="form-control" placeholder="Contraseña" required style="max-width: 450px; margin: 0 auto;">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" style="max-width: 350px; width: 100%;">Iniciar Sesión</button>
+            </form>
+            <div class="text-center mt-3">
+                <a href="../index.php" class="btn btn-secondary" style="max-width: 300px; width: 100%;">Volver a la Página Principal</a>
             </div>
-            <div class="form-group w-100" style="max-width: 350px;">
-                <label for="contrasena" class="w-100 text-center">Contraseña</label>
-                <input type="password" name="contrasena" id="contrasena" class="form-control" placeholder="Contraseña" required style="max-width: 450px; margin: 0 auto;">
-            </div>
-            <button type="submit" class="btn btn-primary btn-block" style="max-width: 350px; width: 100%;">Iniciar Sesión</button>
-        </form>
-        <div class="text-center mt-3">
-            <a href="../index.php" class="btn btn-secondary" style="max-width: 300px; width: 100%;">Volver a la Página Principal</a>
         </div>
     </div>
+        <?php
+        // Incluir pie de página al final de la página
+        include '../includes/footer.php';
+        ?>
 </body>
 </html>
-<?php
-// Incluir pie de página
-include '../includes/footer.php';
-?>

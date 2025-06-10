@@ -76,10 +76,14 @@ class Reserva {
         return $resultado ? "Reserva registrada exitosamente." : "Error al registrar la reserva.";
     }
 
-    public function getAllReservas() {
-        $result = $this->db->query("SELECT * FROM reserva");
-        return $result->fetch_all(MYSQLI_ASSOC);
-    }
+public function getAllReservas() {
+    $query = "SELECT r.*, l.nombre_lugar AS nombre_lugar 
+              FROM reserva r
+              JOIN lugar l ON r.lugar_reserva = l.idlugar";
+              
+    $result = $this->db->query($query);
+    return $result->fetch_all(MYSQLI_ASSOC);
+}
 
     public function getReservaById($idreserva) {
         $stmt = $this->db->prepare("SELECT * FROM reserva WHERE idreserva = ?");
@@ -101,4 +105,3 @@ class Reserva {
     }
 }
 ?>
-

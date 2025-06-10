@@ -97,7 +97,7 @@ include_once __DIR__ . '/../includes/header.php';
 </head>
 <body class="bg-dark text-white">
     <div class="container mt-5">
-        <h1 class="text-center">Listado de Fincas</h1>
+        <h1 class="text-center" style="margin-top: -20px;">Listado de Fincas</h1>
         <form method="GET" class="mb-4">
             <div class="input-group">
                 <input type="text" name="buscar" class="form-control" placeholder="Buscar finca por nombre..." value="<?php echo isset($_GET['buscar']) ? htmlspecialchars($_GET['buscar']) : ''; ?>">

@@ -50,14 +50,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         html, body {
             margin: 0;
             padding: 0;
-            height: auto;
+            height: 100vh;
             overflow-x: hidden;
             padding-bottom: 80px; /* Aumenta este valor según necesites */
         }
 
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #f8f9fa;
+            background-color:rgba(221, 246, 221, 0.77);
             color: #333;
         }
         .register-container {
@@ -171,112 +171,112 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <div class="modal-body">
             <p>
                 📄 TÉRMINOS Y CONDICIONES PARA EL TRATAMIENTO DE DATOS PERSONALES <br><br>
-                1. Responsable del Tratamiento de Datos <br>
+                1. Responsable del Tratamiento de Datos<br><br>
                 FincAntioquia, como responsable del tratamiento de datos personales, informa que los datos suministrados por los usuarios al momento del registro serán tratados conforme a los principios de legalidad, 
                 finalidad, libertad, veracidad, transparencia, seguridad y confidencialidad, en cumplimiento de la legislación vigente en materia de protección de datos personales.
-                <br>
-                2. Finalidad del Tratamiento<br>
+                <br><br><br>
+                2. Finalidad del Tratamiento<br><br>
                 Los datos personales recolectados tienen como finalidad:
-                <br>
-                - Gestionar el acceso y uso de la plataforma web.
-                <br>
-                - Permitir la correcta identificación de los usuarios y autenticación dentro del sistema.
-                <br>
-                - Gestionar las reservas, solicitudes y publicaciones de servicios.
-                <br>
-                - Enviar notificaciones y comunicaciones relacionadas con el uso de la plataforma.
-                <br>
-                - Administrar el perfil y los bienes inmuebles publicados por los proveedores.
-                <br>
-                - Realizar análisis estadísticos y de uso de la plataforma para mejorar los servicios ofrecidos.
-                <br>
-                - Contactar al usuario en relación con el uso de los servicios, notificaciones de la plataforma, actualizaciones y asuntos administrativos.
-                <br>
-                - Enviar información promocional, publicitaria o comercial sobre servicios propios o de terceros, por cualquier canal (email, SMS, mensajería instantánea, entre otros).
-                <br>
-                - Realizar encuestas de satisfacción y estudios de mercado.
-                <br>
-                - Cumplir con las obligaciones legales y contractuales que correspondan.
                 <br><br>
+                - Gestionar el acceso y uso de la plataforma web.
+                <br><br>
+                - Permitir la correcta identificación de los usuarios y autenticación dentro del sistema.
+                <br><br>
+                - Gestionar las reservas, solicitudes y publicaciones de servicios.
+                <br><br>
+                - Enviar notificaciones y comunicaciones relacionadas con el uso de la plataforma.
+                <br><br>
+                - Administrar el perfil y los bienes inmuebles publicados por los proveedores.
+                <br><br>
+                - Realizar análisis estadísticos y de uso de la plataforma para mejorar los servicios ofrecidos.
+                <br><br>
+                - Contactar al usuario en relación con el uso de los servicios, notificaciones de la plataforma, actualizaciones y asuntos administrativos.
+                <br><br>
+                - Enviar información promocional, publicitaria o comercial sobre servicios propios o de terceros, por cualquier canal (email, SMS, mensajería instantánea, entre otros).
+                <br><br>
+                - Realizar encuestas de satisfacción y estudios de mercado.
+                <br><br>
+                - Cumplir con las obligaciones legales y contractuales que correspondan.
+                <br><br><br>
 
-                3. Datos Recolectados<br>
+                3. Datos Recolectados<br><br>
                 Durante el proceso de registro y uso de la plataforma, se podrán recolectar los siguientes datos:
-                <br>
+                <br><br>
                 Para todos los usuarios:
-                <br>
+                <br><br>
                 - Nombre completo
-                <br>
+                <br><br>
                 - Apellido completo
-                <br>
+                <br><br>
                 - Documento de identidad
-                <br>
+                <br><br>
                 - Dirección de correo electrónico
-                <br>
+                <br><br>
                 - Número de teléfono
-                <br>
+                <br><br>
                 - Dirección de residencia
-                <br>
+                <br><br>
                 - Información de navegación y uso del sitio
                 <br><br>
                 Para proveedores:
-                <br>
+                <br><br>
                 - Información de bienes inmuebles (dirección, descripción, fotografías, tarifas, condiciones del inmueble, atracciones turisticas, horarios, entre otros relacionados con el inmueble)
-                <br>
+                <br><br>
                 Documentación soporte de la propiedad y autorización para publicar
-                <br><br>
+                <br><br><br>
                 4. Tratamiento de Bienes Inmuebles de Proveedores
-                <br>
-                El proveedor autoriza expresamente a Lugyser para:
-                <br>
-                - Publicar en la plataforma web y otros medios electrónicos la información relacionada con los bienes inmuebles registrados.
-                <br>
-                - Utilizar las imágenes, descripciones y detalles de los inmuebles para la promoción y comercialización de los mismos
-                <br>
-                - Usar las imágenes, descripciones y detalles de los inmuebles con fines promocionales y comerciales.
-                <br>
-                - Conservar un registro de los inmuebles para fines estadísticos, legales y de trazabilidad.
                 <br><br>
+                El proveedor autoriza expresamente a Lugyser para:
+                <br><br>
+                - Publicar en la plataforma web y otros medios electrónicos la información relacionada con los bienes inmuebles registrados.
+                <br><br>
+                - Utilizar las imágenes, descripciones y detalles de los inmuebles para la promoción y comercialización de los mismos
+                <br><br>
+                - Usar las imágenes, descripciones y detalles de los inmuebles con fines promocionales y comerciales.
+                <br><br>
+                - Conservar un registro de los inmuebles para fines estadísticos, legales y de trazabilidad.
+                <br><br><br>
                 5. Autorización para Envío de Mensajería y Comunicaciones
-                <br>
+                <br><br>
                 El usuario autoriza expresamente a Lugyser para el envío de:
-                <br>
+                <br><br>
                 - Mensajes de texto (SMS)
-                <br>
+                <br><br>
                 - Correos electrónicos
-                <br>
+                <br><br>
                 - Notificaciones dentro de la plataforma
-                <br>
+                <br><br>
                 - Comunicaciones a través de aplicaciones de mensajería como WhatsApp
-                <br>
+                <br><br>
                 Estas comunicaciones podrán estar relacionadas con actualizaciones de servicios, confirmación de actividades,
                  promociones, encuestas, campañas comerciales y demás información relevante del servicio.
-                <br><br>
+                <br><br><br>
                 6. Derechos del Titular de los Datos
-                <br>
-                Los usuarios podrán ejercer los siguientes derechos:
-                <br>
-                - Conocer, actualizar y rectificar sus datos personales.
-                <br>
-                - Solicitar la supresión de los datos cuando considere que no están siendo tratados conforme a los principios y normas aplicables.
-                <br>
-                - Revocar la autorización otorgada para el tratamiento de sus datos.
-                <br>
-                - Solicitar prueba de la autorización otorgada.
-                <br>
-                - Estas solicitudes podrán enviarse al correo electrónico de contacto de Lugyser o a través del formulario de contacto dispuesto en la plataforma.
                 <br><br>
+                Los usuarios podrán ejercer los siguientes derechos:
+                <br><br>
+                - Conocer, actualizar y rectificar sus datos personales.
+                <br><br>
+                - Solicitar la supresión de los datos cuando considere que no están siendo tratados conforme a los principios y normas aplicables.
+                <br><br>
+                - Revocar la autorización otorgada para el tratamiento de sus datos.
+                <br><br>
+                - Solicitar prueba de la autorización otorgada.
+                <br><br>
+                - Estas solicitudes podrán enviarse al correo electrónico de contacto de Lugyser o a través del formulario de contacto dispuesto en la plataforma.
+                <br><br><br>
                 7. Conservación de la Información
-                <br>
+                <br><br>
                 - Los datos serán conservados únicamente durante el tiempo que sea necesario para cumplir con los fines del tratamiento, 
                 o mientras exista una relación activa con el usuario, y conforme a los términos legales y contractuales aplicables.
-                <br>
+                <br><br><br>
                 8. Modificaciones a los Términos
                 <br><br>
                 FincAntioquia se reserva el derecho de modificar en cualquier momento estos Términos y Condiciones. 
                 Cualquier cambio será informado oportunamente a través del sitio web.
-                <br><br>
+                <br><br><br>
                 9. Aceptación
-                <br>
+                <br><br>
                 Al registrarse y utilizar la plataforma Lugyser, el usuario declara haber leído, comprendido y aceptado los presentes Términos y Condiciones 
                 de tratamiento de datos personales, así como autorizar expresamente el uso de su información en los términos descritos anteriormente.
             </p>
@@ -288,13 +288,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
       </div>
     </div>
-
     <!-- Scripts necesarios para el modal de Bootstrap -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-<?php
-// Incluir pie de página
-include '../includes/footer.php';
-?>
+

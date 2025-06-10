@@ -38,15 +38,14 @@ if (!$lugares) {
             background-color: #f8f9fa;
         }
         html, body {
-    margin: 0;
-    padding: 0;
-    height: auto;
-    overflow-x: hidden;
-    padding-bottom: 80px; /* Aumenta este valor según necesites */
-}
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 80px; /* Aumenta este valor según necesites */
+        }
         .navbar {
             background-color: #28a745;
-            margin-top: 30px;
         }
         .navbar a {
             color: white;
@@ -80,9 +79,7 @@ if (!$lugares) {
             display: block;
             margin: 10px auto; /* Los centra automáticamente horizontalmente */
             width: fit-content; /* Hace que el ancho del botón se ajuste al contenido */
-
         }
-
         .container h1 {
             color: #28a745;
             font-weight: bold;
@@ -134,7 +131,4 @@ if (!$lugares) {
     </div>
 </body>
 </html>
-<?php
-// Incluir pie de página
-include '../includes/footer.php';
-?>
+

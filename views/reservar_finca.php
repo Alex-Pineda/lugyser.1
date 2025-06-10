@@ -79,7 +79,7 @@ if (isset($_GET['buscar_lugar'])) {
         html, body {
             margin: 0;
             padding: 0;
-            height: auto;
+            height: 100vh;
             overflow-x: hidden;
             padding-bottom: 80px; /* Aumenta este valor según necesites */
         }
@@ -413,7 +413,6 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
 </html>
-
 <?php
 // Incluir pie de página
 include '../includes/footer.php';

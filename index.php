@@ -34,21 +34,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color:rgb(115, 205, 209);
+            background-color:rgba(10, 135, 83, 0.87);
             color: #333;
+
         }
         html, body {
             margin: 0;
             padding: 0;
-            height: auto;
+            height: 100vh;
             overflow-x: hidden;
             padding-bottom: 80px; /* Aumenta este valor según necesites */
         }
 
         .navbar {
-            margin-top: 30px;
-            background-color: #28a745;
+            display: flex;
+            align-items: center;
+            height: 10%;
+            background-color:rgb(6, 71, 59);
+            justify-content: space-between;
         }
+            
         .navbar a {
             color: white;
             font-weight: bold;
@@ -66,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background-position: center;
             color: white;
             text-align: center;
-            padding: 2rem 1rem;
+            padding: 1rem 1rem;
         }
         .hero h1 {
             font-size: 3rem;
@@ -104,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
         <a class="navbar-brand" href="index.php">
-        <img src="uploads/FA.jpeg" alt="Logo" width="40" height="40" style="border-radius: 50%;">
+        <img src="uploads/FA.jpeg" alt="Logo" width="42" height="42" style="border-radius: 50%;">
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContenido" aria-controls="navbarContenido" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -119,16 +124,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
         </div>
     </div>
-
 </nav>
-
     <!-- Hero Section -->
-    <div class="hero">
+    <div class="hero"><br>
         <h1>Bienvenido a FincAntioquia</h1>
-        <p>Explora y reserva las mejores fincas para tus vacaciones.</p>
-        <a href="views/listar_fincas.php" class="btn btn-primary btn-lg">Ver Lugares</a> <!-- Redirige correctamente a listar_fincas.php -->
+        <p>Explora y reserva las mejores fincas para tus vacaciones.</p><br>
+        <a href="views/listar_fincas.php" class="btn btn-primary btn-lg" style="background-color:#212529; color: lime; ">Ver Lugares</a> <!-- Redirige correctamente a listar_fincas.php -->
     </div>
-
     <!-- Contenido adicional -->
     <div class="container mt-5">
         <h2 class="text-center">¿Por qué elegir FincAntioquia?</h2>
@@ -151,10 +153,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
     </div>
-
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>
 <?php
@@ -260,11 +260,10 @@ switch ($action) {
         }
         break;
 }
-        if ($_GET['action'] === 'mostrarMapa' && isset($_GET['idlugar'])) {
+        if (isset($_GET['action']) && $_GET['action'] === 'mostrarMapa' && isset($_GET['idlugar'])) {
         $controller = new LugarController();
         $controller->mostrarMapaLugar($_GET['idlugar']);
     }
 // Cerrar la conexión
 $conn->close();
-
 ?>

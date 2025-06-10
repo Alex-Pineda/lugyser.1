@@ -7,7 +7,7 @@
     <link rel="icon" href="/lugyser/favicon-rounded.ico" type="image/x-icon">
 </head>
 <body>
-    <header class="bg-primary text-white text-center py-2" style="min-height: 45px;">
+    <header class="bg-primary text-white text-center py-2" style="min-height: 64px;">
         <div class="container d-flex align-items-center justify-content-center">
             <a href="../views/admin_dashboard.php" class="mr-4">
                 <img src="../uploads/FA.jpeg" alt="Volver" style="height:45px; border-radius: 50%; width:auto; cursor:pointer;">
@@ -21,7 +21,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="white" class="bi bi-chat-dots" viewBox="0 0 16 16">
               <path d="M2 2a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h2.586A1.5 1.5 0 0 1 6 14.5V15a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-.5a1.5 1.5 0 0 1 1.414-1.5H14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2zm3 7a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
             </svg>
-        </a>
+            </a>
         </div>
     </header>
 </body>

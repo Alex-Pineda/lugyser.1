@@ -7,6 +7,7 @@ if (!isset($_SESSION['usuario']) || !in_array('administrador', array_column($_SE
 
 require_once '../config/database.php';
 require_once '../models/RolModel.php';
+require_once '../models/NotificacionModel.php';
 
 $db = new Database();
 $conn = $db->getConnection();
@@ -14,7 +15,20 @@ $conn = $db->getConnection();
 $usuarioNombre = $_SESSION['usuario']['nombre'];
 $rolModel = new RolModel($conn);
 
+// Verifica si la clase existe después de incluir el archivo
+if (!class_exists('NotificacionModel')) {
+    die("<div class='alert alert-danger text-center'>Error: No se pudo cargar la clase NotificacionModel. Verifica la ruta y el nombre del archivo NotificacionModel.php.</div>");
+}
+
+// Obtener los mensajes recibidos por el administrador actual
+$notificacionModel = new NotificacionModel($conn);
+$mensajesRecibidos = $notificacionModel->obtenerMensajesPorDestino($usuarioNombre);
 // Procesar formulario al enviar
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $idUsuario = $_POST['usuario_id'];
+    $nombreRol = $_POST['rol'];
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $idUsuario = $_POST['usuario_id'];
     $nombreRol = $_POST['rol'];
@@ -23,7 +37,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $usuarioExiste = $rolModel->verificarUsuarioExiste($idUsuario);
     $rolExiste = $rolModel->verificarRolExiste($nombreRol);
 
-if ($usuarioExiste && $rolExiste) {
+    if ($usuarioExiste && $rolExiste) {
+        $idRol = $rolExiste['idrol'];
+        $rolModel->asignarRolUnico($idUsuario, $idRol);
+        header("Location: admin_dashboard.php?mensaje=rol_asignado");
+        exit;
+    } else {
+        echo "<div class='alert alert-danger text-center'>Error: Usuario o rol inválido.</div>";
+    }
+
+    if ($usuarioExiste && $rolExiste) {
     $idRol = $rolExiste['idrol'];
 
     // ✅ Esta es la función correcta
@@ -60,16 +83,14 @@ $usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
         }
         
          html, body {
-            margin-right: 8px;
             padding: 0;
-            height: auto;
+            height: 100vh;
             overflow-x: hidden;
             padding-bottom: 80px; /* Aumenta este valor según necesites */
         }
 
         .navbar {
             background-color: #007bff;
-            margin-top: 30px;
         }
         .navbar a {
             color: white;
@@ -87,7 +108,7 @@ $usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
             border: none;
             margin-bottom: 15px; /* espacio entre botones */
         }
-        .btn-primary:hover {
+         .btn-primary:hover {
             background-color:rgb(28, 204, 192);
         }
         .btn-danger {
@@ -100,22 +121,182 @@ $usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body>
     <!-- Barra de navegación -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <a class="navbar-brand">Bienvenido <?php echo htmlspecialchars($_SESSION['usuario']['nombre']); ?></a>
-            <div class="ml-auto">
-                <?php if (isset($_SESSION['usuario'])): ?>
-                    <a href="../controllers/logout.php" class="btn btn-danger btn-sm">Cerrar Sesión</a>
-                <?php else: ?>
-                    <a href="../views/login.php" class="btn btn-light btn-sm">Iniciar Sesión</a>
-                    <a href="../views/register.php" class="btn btn-light btn-sm">Registrarse</a>
-                <?php endif; ?>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+        <!-- Izquierda: Mensaje de bienvenida -->
+        <div class="d-flex align-items-center">
+            <a class="navbar-brand mb-0">Bienvenido <?php echo htmlspecialchars($_SESSION['usuario']['nombre']); ?></a>
+        </div>
+
+        <!-- Derecha: Botones -->
+        <div class="d-flex align-items-center">
+            <?php if (isset($_SESSION['usuario'])): ?>
+                <a href="../controllers/logout.php" class="btn btn-danger btn-sm ml-2">Cerrar Sesión</a>
+            <?php else: ?>
+                <a href="../views/login.php" class="btn btn-light btn-sm ml-2">Iniciar Sesión</a>
+                <a href="../views/register.php" class="btn btn-light btn-sm ml-2">Registrarse</a>
+            <?php endif; ?>
+        </div>
+    </div>
+</nav>
+<h1 class="text-center" style="color: #007bff; font-weight: bold; margin-top: 30px;">Panel administrativo</h1>
+<div class="container mt-4">
+    <h2 class="text-center mb-3" style="font-size:1.4rem; color: #007bff; font-weight: bold;">Mensajeria</h2>
+    <?php if (!empty($mensajesRecibidos)): ?>
+        <div class="table-responsive" style="max-height: 250px; overflow-y: auto;">
+            <table class="table table-bordered table-hover table-sm bg-white">
+                <thead class="thead-light">
+                    <tr>
+                        <th>De</th>
+                        <th>Asunto</th>
+                        <th>Mensaje</th>
+                        <th>Fecha</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($mensajesRecibidos as $mensaje): ?>
+                        <tr id="mensaje-<?php echo $mensaje['idnotificacion']; ?>">
+                            <td>
+                                <span class="badge badge-info">
+                                    <?php echo htmlspecialchars($mensaje['remitente']); ?>
+                                </span>
+                            </td>
+                            <td>
+                                <strong><?php echo htmlspecialchars($mensaje['asunto']); ?></strong>
+                            </td>
+                            <td>
+                                <?php echo nl2br(htmlspecialchars($mensaje['mensaje'])); ?>
+                            </td>
+                            <td>
+                                <span class="text-muted" style="font-size:0.95em;">
+                                    <?php echo date('d/m/Y', strtotime($mensaje['fecha_notificacion'])); ?>
+                                </span>
+                            </td>
+                            <td>
+                                <!-- Botón para responder (abre modal) -->
+                                <button type="button" class="btn btn-sm btn-primary btn-responder" 
+                                    data-remitente="<?php echo htmlspecialchars($mensaje['remitente']); ?>"
+                                    data-id="<?php echo $mensaje['idnotificacion']; ?>"
+                                    data-toggle="modal" data-target="#responderModal">
+                                    Responder
+                                </button>
+                                <!-- Botón para eliminar (AJAX) -->
+                                <button type="button" class="btn btn-sm btn-danger btn-eliminar" 
+                                    data-id="<?php echo $mensaje['idnotificacion']; ?>">
+                                    Eliminar
+                                </button>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    <?php else: ?>
+        <div class="alert alert-info text-center">
+            No tienes mensajes recibidos.
+        </div>
+    <?php endif; ?>
+</div>
+
+<!-- Modal para responder mensaje -->
+<div class="modal fade" id="responderModal" tabindex="-1" role="dialog" aria-labelledby="responderModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <form id="formResponder" method="post" action="../controllers/responder_mensaje.php">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="responderModalLabel">Responder Mensaje</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" name="idnotificacion" id="modalIdNotificacion">
+            <div class="form-group">
+                <label for="destinatario">Para</label>
+                <input type="text" class="form-control" id="modalDestinatario" name="destinatario" readonly>
+            </div>
+            <div class="form-group">
+                <label for="asunto">Asunto</label>
+                <input type="text" class="form-control" id="modalAsunto" name="asunto" value="Respuesta a tu mensaje" required>
+            </div>
+            <div class="form-group">
+                <label for="mensaje">Mensaje</label>
+                <textarea class="form-control" id="modalMensaje" name="mensaje" rows="4" required></textarea>
             </div>
         </div>
-    </nav>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Enviar Respuesta</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
 
-    <div class="container mt-5">
-        <h1 class="text-center">Panel de Administrador</h1>
+<!-- Incluir jQuery antes de los scripts que lo requieren -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+<script>
+
+// Llenar modal de respuesta con datos del mensaje
+document.querySelectorAll('.btn-responder').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        document.getElementById('modalDestinatario').value = this.getAttribute('data-remitente');
+        document.getElementById('modalIdNotificacion').value = this.getAttribute('data-id');
+        document.getElementById('modalMensaje').value = '';
+    });
+});
+
+// Eliminar mensaje por AJAX
+document.querySelectorAll('.btn-eliminar').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        if (!confirm('¿Estás seguro de eliminar este mensaje?')) return;
+        var id = this.getAttribute('data-id');
+        var row = document.getElementById('mensaje-' + id);
+
+        fetch('../controllers/eliminar_mensaje.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: 'eliminar_id=' + encodeURIComponent(id)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                row.remove();
+            } else {
+                alert('No se pudo eliminar el mensaje.');
+            }
+        })
+        .catch(() => alert('Error al eliminar el mensaje.'));
+    });
+});
+
+// Enviar respuesta por AJAX
+document.getElementById('formResponder').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var form = this;
+    var datos = new FormData(form);
+    fetch(form.action, {
+        method: 'POST',
+        body: datos
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert('Respuesta enviada correctamente');
+            $('#responderModal').modal('hide');
+            form.reset();
+        } else {
+            alert('No se pudo enviar la respuesta');
+        }
+    })
+    .catch(() => alert('Error al enviar la respuesta.'));
+});
+</script>
+
+    <div class="container mt-5" style= "max-width:97%; margin: 0 auto;">
+
         <div class="row text-center mt-4">
             <div class="col-md-3">
                 <a href="publicar_finca.php" class="btn btn-primary btn-block">Publicar Finca</a>
@@ -158,40 +339,45 @@ $usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
             </div>
             <!-- Columna derecha: Gráfica de Distribución de Usuarios por Rol -->
             <div class="col-md-6 d-flex flex-column align-items-center">
-            <h2 class="text-center mb-3" style="font-size:1.3rem;">Distribución de Usuarios por Rol</h2>
-            <div style="width: 100%; max-width: 260px;">
+            <h2 class="text-center mb-3" style="font-size:1.6rem; color: #007bff; font-weight: bold;">Distribución de Usuarios por Rol</h2>
+            <div style="width: 100%; max-width: 280px;">
                 <canvas id="usuariosPorRolChart" height="180" style="display:block; margin:0 auto; max-width:220px;"></canvas>
             </div>
             </div>
         </div>
+            <?php if (isset($_GET['mensaje']) && $_GET['mensaje'] === 'rol_asignado'): ?>
+            <div class="alert alert-success text-center mt-3">
+                Rol asignado correctamente.
+            </div>
+            <?php endif; ?>
     </div>
-        <div>
-            <h1 class="text-center mt-5">Usuarios Registrados</h1>
+        <div style="width:95%; margin: 0 auto;">
+            <h1 class="text-center mt-5" style="font-size:1.6rem; color: #007bff; font-weight: bold;">Usuarios Registrados</h1><br>
             <div class="row mb-3">
             <div class="col-md-6">
-                <style>
-                #usuariosPorRolChart {
-                    max-width: 300px;
-                    max-height: 200px;
-                    margin: 0 auto;
-                    display: block;
-                }
-                </style>
-                <input type="text" id="busquedaUsuario" class="form-control" placeholder="Buscar usuario...">
+            <style>
+            #usuariosPorRolChart {
+            max-width: 300px;
+            max-height: 200px;
+            margin: 0 auto;
+            display: block;
+            }
+            </style>
+            <input type="text" id="busquedaUsuario" class="form-control" placeholder="Buscar usuario...">
             </div>
             <div class="col-md-6 text-right">
-                <div class="btn-group" role="group">
-                <button id="exportExcel" class="btn btn-success">Exportar a Excel</button>
-                <button id="exportPDF" class="btn btn-danger">Exportar a PDF</button>
-                <button id="exportCSV" class="btn btn-info">Exportar a CSV</button>
-                <button id="exportPrint" class="btn btn-secondary">Imprimir</button>
-                <button id="exportCopy" class="btn btn-primary">Copiar</button>
-                </div>
+            <div class="btn-group" role="group">
+            <button id="exportExcel" class="btn btn-success">Exportar a Excel</button>
+            <button id="exportPDF" class="btn btn-danger">Exportar a PDF</button>
+            <button id="exportCSV" class="btn btn-info">Exportar a CSV</button>
+            <button id="exportPrint" class="btn btn-secondary">Imprimir</button>
+            <button id="exportCopy" class="btn btn-primary1" style="height: 20%; background-color:dodgerblue; color: white;">Copiar</button>
             </div>
             </div>
-            <div style="max-height: 300px; overflow-y: auto;">
-            <table class="table table-sm table-bordered mt-2" id="usuariosTable">
-                <thead class="thead-light">
+            </div>
+            <div style="max-height: 220px; overflow-y: auto;">
+            <table class="table table-sm table-bordered mt-2" id="usuariosTable" style="width:100%; margin: 0 auto;">
+            <thead class="thead-light"></thead>
                 <tr>
                     <th>ID</th>
                     <th>Nombre</th>
@@ -343,15 +529,10 @@ $usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
             doc.save('usuarios.pdf');
         });
         </script>
-
-<?php if (isset($_GET['mensaje']) && $_GET['mensaje'] === 'rol_asignado'): ?>
-    <div class="alert alert-success text-center mt-3">
-        Rol asignado correctamente.
-    </div>
-<?php endif; ?>
-</body>
-</html>
-<?php
+        <?php
 // Incluir pie de página
 include '../includes/footer.php';
 ?>
+</body>
+</html>
+

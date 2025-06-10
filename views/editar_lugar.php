@@ -21,9 +21,6 @@ if (!$lugar) {
     exit;
 }
 ?>
-<?php
-include_once __DIR__ . '/../includes/header.php';
-?>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -136,7 +133,7 @@ html, body {
                 </div>
 
                 <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-primary px-4">Actualizar</button>
+                    <button type="submit" onclick="setTimeout(() => window.history.back(), 3000)" class="btn btn-primary px-4">Actualizar</button>
                     <a href="javascript:history.back()" class="btn btn-secondary px-4 ml-2">Cancelar</a>
                 </div>
             </form>
@@ -145,8 +142,15 @@ html, body {
     <style>
         body, html {
             background: #f0f4f8 !important;
+            min-height: 100vh;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
         }
         .main-bg {
+            flex: 1 0 auto;
             min-height: 100vh;
             background: linear-gradient(135deg, #e3eafc 0%, #f0f4f8 100%);
             padding-top: 40px;
@@ -183,6 +187,10 @@ html, body {
             justify-content: space-between;
             min-height: 100%;
         }
+        footer {
+            flex-shrink: 0;
+            width: 100%;
+        }
         @media (max-width: 767.98px) {
             .container {
                 padding: 1rem;
@@ -195,9 +203,10 @@ html, body {
             }
         }
     </style>
+    <?php
+    // Incluir pie de página
+    include '../includes/footer.php';
+    ?>
 </body>
 </html>
-<?php
-// Incluir pie de página
-include '../includes/footer.php';
-?>
+
