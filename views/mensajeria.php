@@ -63,6 +63,7 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <title>Enviar Mensaje</title>
+    <link rel="icon" href="/lugyser/favicon-rounded.ico" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
